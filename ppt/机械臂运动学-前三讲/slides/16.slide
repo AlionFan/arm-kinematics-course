@@ -1,0 +1,48 @@
+<Slide style={{ width: 1280, height: 720, padding: 0, display: 'flex', flexDirection: 'column', background: '#FFFFFF', fontFamily: 'Microsoft YaHei' }}>
+    <Box style={{ height: 76, background: '#1E4FA8', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 40, paddingRight: 40 }}>
+        <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#FFFFFF' }}>从 2R 到 nR：多一段，就多累加一个角</Text>
+        <Text style={{ fontSize: 15, color: '#CFE0F5' }}>M3 · 推广</Text>
+    </Box>
+    <Box style={{ height: 12 }} />
+    <Box style={{ flex: 1, paddingLeft: 40, paddingRight: 40, display: 'flex', flexDirection: 'row', gap: 24 }}>
+        <Box style={{ width: 428, display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <Box style={{ height: 42, background: '#E8EFF8', display: 'flex', alignItems: 'center', paddingLeft: 18 }}>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#0E3F8C' }}>3R：再套一层</Text>
+            </Box>
+            <Box style={{ background: '#FFFFFF', border: '1px solid #E8EFF8', padding: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <Math latex='x = L_{1}\cos\theta_{1} + L_{2}\cos(\theta_{1}+\theta_{2}) + L_{3}\cos(\theta_{1}+\theta_{2}+\theta_{3})' width={380} color='#0E3F8C' />
+                <Math latex='y = L_{1}\sin\theta_{1} + L_{2}\sin(\theta_{1}+\theta_{2}) + L_{3}\sin(\theta_{1}+\theta_{2}+\theta_{3})' width={380} color='#0E3F8C' />
+            </Box>
+            <Box style={{ flex: 1, background: '#E8EFF8', padding: 20, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#0E3F8C' }}>规律只有一句话</Text>
+                <Text style={{ fontSize: 16, color: '#1A2230', opacity: 0.8, lineHeight: 1.75 }}>第 i 段用的角度是前面所有角度之和：θ₁ + θ₂ + … + θᵢ。</Text>
+                <Text style={{ fontSize: 16, color: '#1A2230', opacity: 0.8, lineHeight: 1.75 }}>记住这一句，就不需要背 3R、4R、5R 的公式。</Text>
+            </Box>
+        </Box>
+        <Box style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E8EFF8', padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <Text style={{ fontSize: 19, fontWeight: 'bold', color: '#0E3F8C' }}>写成循环：fk_nR 能算任意多段</Text>
+            <CodeBlock
+                code={`def fk_nR(lengths, angles):
+    x = y = 0.0
+    acc = 0.0            # 累计角度
+    for L, a in zip(lengths, angles):
+        acc += a         # ← 累加！
+        x += L * np.cos(acc)
+        y += L * np.sin(acc)
+    return x, y`}
+                language='python'
+                width={640}
+                fontSize={17}
+                theme='github-light'
+            />
+            <Box style={{ flex: 1, background: '#0E3F8C', padding: 18, display: 'flex', flexDirection: 'column', gap: 8, justifyContent: 'center' }}>
+                <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#FFFFFF' }}>判断：这十几行已经够用了</Text>
+                <Text style={{ fontSize: 15, color: '#CFE0F5', lineHeight: 1.75 }}>把它从平面搬到三维、把 cos/sin 换成旋转矩阵，就是 M8 的变换链。</Text>
+            </Box>
+        </Box>
+    </Box>
+    <Box style={{ height: 44, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 40, paddingRight: 40 }}>
+        <Text style={{ fontSize: 14, color: '#1A2230', opacity: 0.5 }}>第 3 章 · M3　平面正运动学：1R → 2R → 3R</Text>
+        <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#0E3F8C', fontFamily: 'Times New Roman' }}>16 / 21</Text>
+    </Box>
+</Slide>

@@ -1,0 +1,17 @@
+<Slide style={{ width: 1280, height: 720, padding: 0, background: '#FFFFFF', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', fontFamily: 'Microsoft YaHei' }}>
+    <Text style={{ fontSize: 208, fontWeight: 'bold', color: '#E8EFF8', fontFamily: 'Times New Roman', lineHeight: 1 }}>02</Text>
+    <Text style={{ fontSize: 46, fontWeight: 'bold', color: '#0E3F8C', marginTop: 8 }}>单位圆与“角度坐标”</Text>
+    <Box style={{ width: 84, height: 4, background: '#1E4FA8', marginTop: 26, marginBottom: 26 }} />
+    <Box style={{ display: 'flex', flexDirection: 'row', gap: 18 }}>
+        <Box style={{ background: '#E8EFF8', paddingLeft: 22, paddingRight: 22, paddingTop: 12, paddingBottom: 12, display: 'flex', alignItems: 'center' }}>
+            <Text style={{ fontSize: 17, color: '#0E3F8C', fontWeight: 'bold' }}>sin / cos 就是坐标</Text>
+        </Box>
+        <Box style={{ background: '#E8EFF8', paddingLeft: 22, paddingRight: 22, paddingTop: 12, paddingBottom: 12, display: 'flex', alignItems: 'center' }}>
+            <Text style={{ fontSize: 17, color: '#0E3F8C', fontWeight: 'bold' }}>弧度制与换算</Text>
+        </Box>
+        <Box style={{ background: '#E8EFF8', paddingLeft: 22, paddingRight: 22, paddingTop: 12, paddingBottom: 12, display: 'flex', alignItems: 'center' }}>
+            <Text style={{ fontSize: 17, color: '#0E3F8C', fontWeight: 'bold' }}>atan2 与象限</Text>
+        </Box>
+    </Box>
+    <Text style={{ fontSize: 16, color: '#1A2230', opacity: 0.6, marginTop: 40 }}>第 2 章　对应页码 P8 – P12　｜　1 课时</Text>
+</Slide>

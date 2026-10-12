@@ -1,0 +1,54 @@
+<Slide style={{ width: 1280, height: 720, padding: 0, display: 'flex', flexDirection: 'column', background: '#FFFFFF', fontFamily: 'Microsoft YaHei' }}>
+    <Box style={{ height: 76, background: '#1E4FA8', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 40, paddingRight: 40 }}>
+        <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#FFFFFF' }}>已知坐标求角度：为什么不能用 arctan</Text>
+        <Text style={{ fontSize: 15, color: '#CFE0F5' }}>M2 · 唯一的坑</Text>
+    </Box>
+    <Box style={{ height: 12 }} />
+    <Box style={{ flex: 1, paddingLeft: 40, paddingRight: 40, display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <Box style={{ height: 42, background: '#E8EFF8', display: 'flex', alignItems: 'center', paddingLeft: 18 }}>
+            <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#0E3F8C' }}>反解要做两步：长度用勾股定理，角度必须用 atan2</Text>
+        </Box>
+        <Table
+            style={{ width: '100%', height: 196 }}
+            defaultTextStyle={{ fontSize: 17, textAlign: 'center', color: '#1A2230' }}
+            defaultCellStyle={{ border: { left: { width: 1, color: '#E8EFF8' }, right: { width: 1, color: '#E8EFF8' }, top: { width: 1, color: '#E8EFF8' }, bottom: { width: 1, color: '#E8EFF8' } } }}
+            cells={[
+                [
+                    { text: '点', textStyle: { bold: true, color: '#FFFFFF' }, cellStyle: { background: { color: '#0E3F8C' } } },
+                    { text: 'y / x 的比值', textStyle: { bold: true, color: '#FFFFFF' }, cellStyle: { background: { color: '#0E3F8C' } } },
+                    { text: 'arctan(y/x) 给出', textStyle: { bold: true, color: '#FFFFFF' }, cellStyle: { background: { color: '#0E3F8C' } } },
+                    { text: '真实角度', textStyle: { bold: true, color: '#FFFFFF' }, cellStyle: { background: { color: '#0E3F8C' } } }
+                ],
+                [
+                    { text: '(1, 1)', textStyle: { fontFamily: 'Times New Roman' } },
+                    { text: '1', textStyle: { fontFamily: 'Times New Roman' } },
+                    { text: '45°', textStyle: { fontFamily: 'Times New Roman' } },
+                    { text: '45°　正确', textStyle: { fontFamily: 'Times New Roman', bold: true, color: '#1E4FA8' } }
+                ],
+                [
+                    { text: '(−1, −1)', textStyle: { fontFamily: 'Times New Roman' }, cellStyle: { background: { color: '#E8EFF8' } } },
+                    { text: '1', textStyle: { fontFamily: 'Times New Roman' }, cellStyle: { background: { color: '#E8EFF8' } } },
+                    { text: '45°　错误', textStyle: { fontFamily: 'Times New Roman', bold: true, color: '#D9534F' }, cellStyle: { background: { color: '#E8EFF8' } } },
+                    { text: '225°（或 −135°）', textStyle: { fontFamily: 'Times New Roman', bold: true, color: '#D9534F' }, cellStyle: { background: { color: '#E8EFF8' } } }
+                ]
+            ]}
+        />
+        <Box style={{ flex: 1, display: 'flex', flexDirection: 'row', gap: 14 }}>
+            <Box style={{ width: 400, background: '#FFFFFF', border: '1px solid #E8EFF8', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, padding: 16 }}>
+                <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#0E3F8C' }}>正确的两步</Text>
+                <Math latex='L = \sqrt{x^{2}+y^{2}}' width={190} color='#1E4FA8' />
+                <Math latex='\theta = \mathrm{atan2}(y,\ x)' width={250} color='#0E3F8C' />
+            </Box>
+            <Box style={{ flex: 1, background: '#E8EFF8', padding: 20, display: 'flex', flexDirection: 'column', gap: 10, justifyContent: 'center' }}>
+                <Text style={{ fontSize: 19, fontWeight: 'bold', color: '#0E3F8C' }}>判断：为什么 atan2 不会错</Text>
+                <Text style={{ fontSize: 16, color: '#1A2230', opacity: 0.8, lineHeight: 1.8 }}>arctan 只看 y/x 的比值，比值一样就分不清象限。(1,1) 和 (−1,−1) 的比值都是 1，它只能都返回 45°。</Text>
+                <Text style={{ fontSize: 16, color: '#1A2230', opacity: 0.8, lineHeight: 1.8 }}>atan2(y, x) 同时看 x 和 y 各自的<span style={{ fontWeight: 'bold' }}>符号</span>，能自动分辨四个象限，返回值范围 (−π, π]。</Text>
+                <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#0E3F8C', lineHeight: 1.7 }}>凡是“已知坐标求角度”，一律用 atan2。</Text>
+            </Box>
+        </Box>
+    </Box>
+    <Box style={{ height: 44, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 40, paddingRight: 40 }}>
+        <Text style={{ fontSize: 14, color: '#1A2230', opacity: 0.5 }}>第 2 章 · M2　单位圆与“角度坐标”</Text>
+        <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#0E3F8C', fontFamily: 'Times New Roman' }}>12 / 21</Text>
+    </Box>
+</Slide>

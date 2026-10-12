@@ -1,0 +1,24 @@
+<Slide style={{ width: 1280, height: 720, padding: 0, background: '#0E3F8C', display: 'flex', flexDirection: 'row', fontFamily: 'Microsoft YaHei' }}>
+    <Box style={{ width: 760, paddingLeft: 80, paddingRight: 40, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 18 }}>
+        <Text style={{ fontSize: 16, color: '#8FB6E8', letterSpacing: 3 }}>高中 · 机器人运动学入门课</Text>
+        <Text style={{ fontSize: 58, fontWeight: 'bold', color: '#FFFFFF', lineHeight: 1.15 }}>机械臂运动学</Text>
+        <Text style={{ fontSize: 24, color: '#CFE0F5', fontFamily: 'Times New Roman', letterSpacing: 1 }}>Robotic Arm Kinematics with Trigonometry</Text>
+        <Box style={{ width: 96, height: 4, background: '#1E4FA8', marginTop: 6, marginBottom: 6 }} />
+        <Text style={{ fontSize: 21, color: '#FFFFFF', lineHeight: 1.5 }}>一门课只讲一件事：机械臂的运动学，本质上就是三角函数。</Text>
+        <Text style={{ fontSize: 16, color: '#A9C3E8', lineHeight: 1.85, marginTop: 4 }}>适用对象：高中（有三角函数基础 · 会一点 Python）<br />课时安排：5 课时（M1 两课时 · M2 一课时 · M3 两课时）<br />配套机型：UR5（主力）· 宇树 R1（对照）<br />版　　本：v1.0 · 2026 秋季学期</Text>
+    </Box>
+    <Box style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <svg width={460} height={420} viewBox='0 0 460 420'>
+            <line x1='50' y1='330' x2='430' y2='330' stroke='#3D7BD9' strokeWidth='2' />
+            <line x1='50' y1='330' x2='50' y2='50' stroke='#3D7BD9' strokeWidth='2' />
+            <line x1='50' y1='330' x2='350' y2='130' stroke='#FFFFFF' strokeWidth='7' strokeLinecap='round' />
+            <circle cx='50' cy='330' r='10' fill='#FFFFFF' />
+            <circle cx='350' cy='130' r='12' fill='#1E4FA8' stroke='#FFFFFF' strokeWidth='4' />
+            <path d='M 112 330 A 62 62 0 0 0 101.4 295.6' fill='none' stroke='#8FB6E8' strokeWidth='3' />
+            <text x='122' y='318' fill='#CFE0F5' fontSize='22' fontFamily='Times New Roman'>θ</text>
+            <text x='232' y='216' fill='#FFFFFF' fontSize='20' fontFamily='Times New Roman'>L</text>
+            <text x='366' y='126' fill='#8FB6E8' fontSize='16' fontFamily='Microsoft YaHei'>末端 (x, y)</text>
+            <text x='58' y='356' fill='#8FB6E8' fontSize='16' fontFamily='Microsoft YaHei'>底座</text>
+        </svg>
+    </Box>
+</Slide>

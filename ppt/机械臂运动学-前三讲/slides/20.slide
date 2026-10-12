@@ -1,0 +1,60 @@
+<Slide style={{ width: 1280, height: 720, padding: 0, display: 'flex', flexDirection: 'column', background: '#FFFFFF', fontFamily: 'Microsoft YaHei' }}>
+    <Box style={{ height: 76, background: '#1E4FA8', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 40, paddingRight: 40 }}>
+        <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#FFFFFF' }}>速查卡：把三节课压缩成一页</Text>
+        <Text style={{ fontSize: 15, color: '#CFE0F5' }}>总结</Text>
+    </Box>
+    <Box style={{ height: 12 }} />
+    <Box style={{ flex: 1, paddingLeft: 40, paddingRight: 40, display: 'flex', flexDirection: 'row', gap: 24 }}>
+        <Box style={{ width: 340, background: '#0E3F8C', padding: 28, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <Box style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <Text style={{ fontSize: 15, color: '#8FB6E8', letterSpacing: 3, fontFamily: 'Times New Roman' }}>CHEAT SHEET</Text>
+                <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#FFFFFF', lineHeight: 1.35 }}>四条<br />速查</Text>
+                <Box style={{ width: 70, height: 3, background: '#3D7BD9', marginTop: 4 }} />
+                <Text style={{ fontSize: 16, color: '#CFE0F5', lineHeight: 1.8, marginTop: 8 }}>①② 是概念，③④ 才是新公式。只背公式不理解 ①②，遇到真机就不知道自己在算哪个空间。</Text>
+            </Box>
+            <Text style={{ fontSize: 14, color: '#8FB6E8' }}>M1 – M3 · 打地基</Text>
+        </Box>
+        <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <Box style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E8EFF8', padding: 18, display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 18 }}>
+                <Box style={{ width: 52, height: 52, background: '#E8EFF8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#0E3F8C', fontFamily: 'Times New Roman' }}>1</Text>
+                </Box>
+                <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 5 }}>
+                    <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#1A2230' }}>FK 与 IK 方向相反</Text>
+                    <Text style={{ fontSize: 15, color: '#1A2230', opacity: 0.75, lineHeight: 1.65 }}>FK：关节角 → 末端位置，<span style={{ fontWeight: 'bold' }}>一定有唯一答案</span>；IK：末端位置 → 关节角，<span style={{ fontWeight: 'bold', color: '#D9534F' }}>可能多解、可能无解</span>。</Text>
+                </Box>
+            </Box>
+            <Box style={{ flex: 1, background: '#E8EFF8', padding: 18, display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 18 }}>
+                <Box style={{ width: 52, height: 52, background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#0E3F8C', fontFamily: 'Times New Roman' }}>2</Text>
+                </Box>
+                <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 5 }}>
+                    <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#1A2230' }}>两个空间，两种语言</Text>
+                    <Text style={{ fontSize: 15, color: '#1A2230', opacity: 0.75, lineHeight: 1.65 }}>关节空间用角度（电机听得懂）；笛卡尔空间用坐标（人说得清）。运动学就是这两个空间之间的翻译官。</Text>
+                </Box>
+            </Box>
+            <Box style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E8EFF8', padding: 18, display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 18 }}>
+                <Box style={{ width: 52, height: 52, background: '#E8EFF8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#0E3F8C', fontFamily: 'Times New Roman' }}>3</Text>
+                </Box>
+                <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 5 }}>
+                    <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#1A2230' }}>一根连杆的翻译公式</Text>
+                    <Text style={{ fontSize: 15, color: '#1A2230', opacity: 0.75, lineHeight: 1.65, fontFamily: 'Times New Roman' }}>正向：x = L·cos θ，y = L·sin θ　　反向：L = hypot(x, y)，θ = atan2(y, x)</Text>
+                </Box>
+            </Box>
+            <Box style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E8EFF8', padding: 18, display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 18 }}>
+                <Box style={{ width: 52, height: 52, background: '#E8EFF8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#0E3F8C', fontFamily: 'Times New Roman' }}>4</Text>
+                </Box>
+                <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 5 }}>
+                    <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#1A2230' }}>多段连杆：角度要累加</Text>
+                    <Text style={{ fontSize: 15, color: '#1A2230', opacity: 0.75, lineHeight: 1.65 }}>第 i 段用 θ₁ + … + θᵢ；可达空间是圆环 |L₁ − L₂| ≤ r ≤ L₁ + L₂（L₁=0.30、L₂=0.22 时是 0.08 ~ 0.52 m）。</Text>
+                </Box>
+            </Box>
+        </Box>
+    </Box>
+    <Box style={{ height: 44, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 40, paddingRight: 40 }}>
+        <Text style={{ fontSize: 14, color: '#1A2230', opacity: 0.5 }}>机械臂运动学 · 前三讲（高中版）</Text>
+        <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#0E3F8C', fontFamily: 'Times New Roman' }}>20 / 21</Text>
+    </Box>
+</Slide>

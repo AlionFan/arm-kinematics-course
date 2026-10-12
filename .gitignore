@@ -14,6 +14,9 @@ outputs/*.gif
 outputs/*.mp4
 !outputs/.gitkeep
 
+# ---- 讲义/PPT 流水线中间产物（本地构建用，不入库） ----
+output/
+
 # ---- 编辑器 / 系统 ----
 .vscode/
 .idea/

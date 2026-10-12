@@ -1,0 +1,48 @@
+<Slide style={{ width: 1280, height: 720, padding: 0, display: 'flex', flexDirection: 'column', background: '#FFFFFF', fontFamily: 'Microsoft YaHei' }}>
+    <Box style={{ height: 76, background: '#1E4FA8', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 40, paddingRight: 40 }}>
+        <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#FFFFFF' }}>动手：把公式写进 fk_2r</Text>
+        <Text style={{ fontSize: 15, color: '#CFE0F5' }}>M3 · 上机任务</Text>
+    </Box>
+    <Box style={{ height: 12 }} />
+    <Box style={{ flex: 1, paddingLeft: 40, paddingRight: 40, display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <Box style={{ height: 42, background: '#E8EFF8', display: 'flex', alignItems: 'center', paddingLeft: 18 }}>
+            <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#0E3F8C' }}>打开 armblocks/blocks/planar.py，补全下面这个函数的两行核心代码</Text>
+        </Box>
+        <Box style={{ height: 296, background: '#FFFFFF', border: '1px solid #E8EFF8', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 12 }}>
+            <CodeBlock
+                code={`def fk_2r(L1, L2, q1, q2):
+    """平面两连杆正运动学：关节角 → 末端坐标
+
+    q1 : 第一根连杆与 x 轴的夹角（弧度）
+    q2 : 第二根连杆相对第一根的夹角（弧度）
+    """
+    # TODO(M3): 两段向量相加
+    x = ________________________________
+    y = ________________________________
+    return float(x), float(y)`}
+                language='python'
+                width={1120}
+                fontSize={17}
+                theme='github-light'
+            />
+        </Box>
+        <Box style={{ flex: 1, display: 'flex', flexDirection: 'row', gap: 14 }}>
+            <Box style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E8EFF8', padding: 18, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <Text style={{ fontSize: 19, fontWeight: 'bold', color: '#D9534F' }}>① 角度要对</Text>
+                <Text style={{ fontSize: 15, color: '#1A2230', opacity: 0.8, lineHeight: 1.7 }}>第二段必须用 np.cos(q1 + q2)，而不是 np.cos(q2)。</Text>
+            </Box>
+            <Box style={{ flex: 1, background: '#E8EFF8', padding: 18, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <Text style={{ fontSize: 19, fontWeight: 'bold', color: '#0E3F8C' }}>② 类型要对</Text>
+                <Text style={{ fontSize: 15, color: '#1A2230', opacity: 0.8, lineHeight: 1.7 }}>返回 float(x), float(y)，不要返回 numpy 标量，否则测试可能失败。</Text>
+            </Box>
+            <Box style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E8EFF8', padding: 18, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <Text style={{ fontSize: 19, fontWeight: 'bold', color: '#0E3F8C' }}>③ 单位要对</Text>
+                <Text style={{ fontSize: 15, color: '#1A2230', opacity: 0.8, lineHeight: 1.7 }}>输入角度是弧度。写测试时记得先 np.radians(30)。</Text>
+            </Box>
+        </Box>
+    </Box>
+    <Box style={{ height: 44, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 40, paddingRight: 40 }}>
+        <Text style={{ fontSize: 14, color: '#1A2230', opacity: 0.5 }}>第 3 章 · M3　平面正运动学：1R → 2R → 3R</Text>
+        <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#0E3F8C', fontFamily: 'Times New Roman' }}>18 / 21</Text>
+    </Box>
+</Slide>

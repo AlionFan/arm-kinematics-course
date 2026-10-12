@@ -1,0 +1,50 @@
+<Slide style={{ width: 1280, height: 720, padding: 0, display: 'flex', flexDirection: 'column', background: '#FFFFFF', fontFamily: 'Microsoft YaHei' }}>
+    <Box style={{ height: 76, background: '#1E4FA8', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 40, paddingRight: 40 }}>
+        <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#FFFFFF' }}>用数字说话：零位在哪，能伸多远</Text>
+        <Text style={{ fontSize: 15, color: '#CFE0F5' }}>M1 · 实测数据</Text>
+    </Box>
+    <Box style={{ height: 12 }} />
+    <Box style={{ flex: 1, paddingLeft: 40, paddingRight: 40, display: 'flex', flexDirection: 'row', gap: 24 }}>
+        <Box style={{ width: 742, background: '#FFFFFF', border: '1px solid #E8EFF8', display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingLeft: 16, paddingRight: 16 }}>
+            <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#0E3F8C', marginBottom: 6 }}>末端可达半径（同一根数轴，同一比例）</Text>
+            <svg width={706} height={300} viewBox='0 0 706 300'>
+                <line x1='80' y1='240' x2='660' y2='240' stroke='#1E4FA8' strokeWidth='2' />
+                <line x1='80' y1='240' x2='80' y2='250' stroke='#0E3F8C' strokeWidth='2' />
+                <line x1='188' y1='240' x2='188' y2='250' stroke='#0E3F8C' strokeWidth='2' />
+                <line x1='296' y1='240' x2='296' y2='250' stroke='#0E3F8C' strokeWidth='2' />
+                <line x1='404' y1='240' x2='404' y2='250' stroke='#0E3F8C' strokeWidth='2' />
+                <line x1='512' y1='240' x2='512' y2='250' stroke='#0E3F8C' strokeWidth='2' />
+                <line x1='620' y1='240' x2='620' y2='250' stroke='#0E3F8C' strokeWidth='2' />
+                <text x='80' y='272' textAnchor='middle' fill='#1A2230' fontSize='14' fontFamily='Times New Roman'>0</text>
+                <text x='188' y='272' textAnchor='middle' fill='#1A2230' fontSize='14' fontFamily='Times New Roman'>0.2</text>
+                <text x='296' y='272' textAnchor='middle' fill='#1A2230' fontSize='14' fontFamily='Times New Roman'>0.4</text>
+                <text x='404' y='272' textAnchor='middle' fill='#1A2230' fontSize='14' fontFamily='Times New Roman'>0.6</text>
+                <text x='512' y='272' textAnchor='middle' fill='#1A2230' fontSize='14' fontFamily='Times New Roman'>0.8</text>
+                <text x='620' y='272' textAnchor='middle' fill='#1A2230' fontSize='14' fontFamily='Times New Roman'>1.0</text>
+                <text x='664' y='248' fill='#1A2230' fontSize='13' fontFamily='Microsoft YaHei' opacity='0.6'>m</text>
+                <text x='99' y='92' fill='#1E4FA8' fontSize='16' fontWeight='bold' fontFamily='Microsoft YaHei'>UR5　　0.036 – 1.028 m</text>
+                <rect x='99' y='100' width='536' height='38' rx='4' fill='#1E4FA8' />
+                <text x='87' y='172' fill='#0E3F8C' fontSize='16' fontWeight='bold' fontFamily='Microsoft YaHei'>宇树 R1　　0.013 – 0.542 m</text>
+                <rect x='87' y='180' width='286' height='38' rx='4' fill='#0E3F8C' />
+                <line x1='373' y1='180' x2='373' y2='240' stroke='#0E3F8C' strokeWidth='1' />
+            </svg>
+        </Box>
+        <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <Box style={{ background: '#FFFFFF', border: '1px solid #E8EFF8', padding: 18, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#0E3F8C' }}>零位末端位置（全部关节角 = 0）</Text>
+                <Text style={{ fontSize: 15, color: '#1A2230', opacity: 0.8, lineHeight: 1.7 }}>UR5：(0.817, 0.191, −0.005) m，距底座 0.839 m</Text>
+                <Text style={{ fontSize: 15, color: '#1A2230', opacity: 0.8, lineHeight: 1.7 }}>宇树 R1：(0.003, −0.034, 0.193) m，距底座 0.196 m</Text>
+                <Text style={{ fontSize: 13, color: '#1A2230', opacity: 0.55, lineHeight: 1.6 }}>数据来源：两台机器官方 URDF 模型，由 armblocks 直接实测</Text>
+            </Box>
+            <Box style={{ flex: 1, background: '#E8EFF8', padding: 18, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#0E3F8C' }}>判断：臂展是选型的第一硬约束</Text>
+                <Text style={{ fontSize: 15, color: '#1A2230', opacity: 0.8, lineHeight: 1.7 }}>R1 的整段可达范围都被 UR5 包在里面；UR5 能伸到接近 1 米，R1 只能到 0.54 米。</Text>
+                <Text style={{ fontSize: 15, color: '#1A2230', opacity: 0.8, lineHeight: 1.7 }}>所以“哪个更好”这个问题本身没意义 —— 先看你要够多远。</Text>
+            </Box>
+        </Box>
+    </Box>
+    <Box style={{ height: 44, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 40, paddingRight: 40 }}>
+        <Text style={{ fontSize: 14, color: '#1A2230', opacity: 0.5 }}>第 1 章 · M1　机械臂怎么“知道”手在哪？</Text>
+        <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#0E3F8C', fontFamily: 'Times New Roman' }}>07 / 21</Text>
+    </Box>
+</Slide>

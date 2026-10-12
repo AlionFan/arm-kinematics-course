@@ -1,0 +1,46 @@
+<Slide style={{ width: 1280, height: 720, padding: 0, display: 'flex', flexDirection: 'column', background: '#FFFFFF', fontFamily: 'Microsoft YaHei' }}>
+    <Box style={{ height: 76, background: '#1E4FA8', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 40, paddingRight: 40 }}>
+        <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#FFFFFF' }}>一台只有关节的机器，凭什么知道自己的手在哪</Text>
+        <Text style={{ fontSize: 15, color: '#CFE0F5' }}>M1 · 驱动问题</Text>
+    </Box>
+    <Box style={{ height: 12 }} />
+    <Box style={{ flex: 1, paddingLeft: 40, paddingRight: 40, display: 'flex', flexDirection: 'row', gap: 24 }}>
+        <Box style={{ width: 372, background: '#0E3F8C', padding: 28, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <Box style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <Text style={{ fontSize: 15, color: '#8FB6E8', letterSpacing: 3 }}>驱动问题</Text>
+                <Text style={{ fontSize: 27, fontWeight: 'bold', color: '#FFFFFF', lineHeight: 1.55 }}>机械臂只有几个“会转的关节”，它怎么知道自己的手在空间的什么地方？</Text>
+            </Box>
+            <Box style={{ background: '#1E4FA8', padding: 18, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <Text style={{ fontSize: 16, color: '#FFFFFF', lineHeight: 1.7 }}>它没有眼睛。</Text>
+                <Text style={{ fontSize: 16, color: '#CFE0F5', lineHeight: 1.7 }}>唯一能读到的数字，是每个关节当前的角度。</Text>
+            </Box>
+        </Box>
+        <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <Box style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E8EFF8', padding: 24, display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 22 }}>
+                <Box style={{ background: '#E8EFF8', width: 108, height: 108, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#0E3F8C', fontFamily: 'Times New Roman' }}>A</Text>
+                </Box>
+                <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <Text style={{ fontSize: 25, fontWeight: 'bold', color: '#1A2230' }}>已知角度 → 求位置</Text>
+                    <Text style={{ fontSize: 17, color: '#1A2230', opacity: 0.72, lineHeight: 1.6 }}>六个关节角都读出来了，末端现在落在哪？这叫<span style={{ fontWeight: 'bold', color: '#0E3F8C' }}>正运动学 FK</span>。</Text>
+                </Box>
+            </Box>
+            <Box style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E8EFF8', padding: 24, display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 22 }}>
+                <Box style={{ background: '#E8EFF8', width: 108, height: 108, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#0E3F8C', fontFamily: 'Times New Roman' }}>B</Text>
+                </Box>
+                <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <Text style={{ fontSize: 25, fontWeight: 'bold', color: '#1A2230' }}>已知位置 → 求角度</Text>
+                    <Text style={{ fontSize: 17, color: '#1A2230', opacity: 0.72, lineHeight: 1.6 }}>想让手精准到达某个点，每个关节该转多少度？这叫<span style={{ fontWeight: 'bold', color: '#0E3F8C' }}>逆运动学 IK</span>。</Text>
+                </Box>
+            </Box>
+            <Box style={{ height: 88, background: '#E8EFF8', padding: 20, display: 'flex', alignItems: 'center' }}>
+                <Text style={{ fontSize: 18, color: '#0E3F8C', lineHeight: 1.6 }}>这两个方向相反的问题，恰好是一道纯粹的<span style={{ fontWeight: 'bold' }}>三角几何题</span> —— 本课程的全部内容都围绕这句话展开。</Text>
+            </Box>
+        </Box>
+    </Box>
+    <Box style={{ height: 44, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 40, paddingRight: 40 }}>
+        <Text style={{ fontSize: 14, color: '#1A2230', opacity: 0.5 }}>第 1 章 · M1　机械臂怎么“知道”手在哪？</Text>
+        <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#0E3F8C', fontFamily: 'Times New Roman' }}>04 / 21</Text>
+    </Box>
+</Slide>
