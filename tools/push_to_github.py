@@ -75,10 +75,12 @@ def api_request(method: str, path: str, token: str, payload: dict | None = None)
 # --------------------------------------------------------------------------- #
 # 读取 git 索引（自动尊重 .gitignore）
 # --------------------------------------------------------------------------- #
-def list_tracked_files() -> list[tuple[str, str]]:
-    """返回 [(mode, path), ...]，mode 为 '100644' / '100755' / '120000'。
+def list_tracked_files() -> list[tuple[str, str, str]]:
+    """返回 [(mode, path, blob_sha), ...]，mode 为 '100644' / '100755' / '120000'。
 
     使用 -z 避免中文路径被 git 转义，路径统一用正斜杠（git 索引原生格式）。
+    blob_sha 用于后续 `git cat-file` 取出**仓库内**的字节，
+    避免工作区 CRLF（core.autocrlf=true）与提交内容不一致。
     """
     out = subprocess.run(
         ["git", "-c", "core.quotepath=false", "ls-files", "-s", "-z"],
@@ -87,14 +89,26 @@ def list_tracked_files() -> list[tuple[str, str]]:
         check=True,
     ).stdout
 
-    files: list[tuple[str, str]] = []
+    files: list[tuple[str, str, str]] = []
     for entry in out.split(b"\x00"):
         if not entry:
             continue
         meta, path = entry.split(b"\t", 1)
-        mode = meta.split(b" ")[0].decode("ascii")
-        files.append((mode, path.decode("utf-8")))
+        parts = meta.split(b" ")
+        mode = parts[0].decode("ascii")
+        sha = parts[1].decode("ascii")
+        files.append((mode, path.decode("utf-8"), sha))
     return sorted(files, key=lambda t: t[1])
+
+
+def blob_bytes(sha: str) -> bytes:
+    """取 git 仓库内的原始 blob 字节（已应用 gitattributes/换行归一化）。"""
+    return subprocess.run(
+        ["git", "cat-file", "blob", sha],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        check=True,
+    ).stdout
 
 
 def repo_header() -> dict:
@@ -172,12 +186,11 @@ def ensure_repo(owner: str, repo: str, token: str, description: str, private: bo
     return False
 
 
-def upload_blobs(files: list[tuple[str, str]], owner: str, repo: str, token: str) -> list[dict]:
+def upload_blobs(files: list[tuple[str, str, str]], owner: str, repo: str, token: str) -> list[dict]:
     tree = []
     blob_path = f"/repos/{owner}/{repo}/git/blobs"
-    for i, (mode, relpath) in enumerate(files, 1):
-        abspath = REPO_ROOT / relpath
-        raw = abspath.read_bytes()
+    for i, (mode, relpath, sha) in enumerate(files, 1):
+        raw = blob_bytes(sha)
         if mode == "120000":  # 符号链接：内容是链接目标
             content = raw.decode("utf-8")
         else:
@@ -188,8 +201,11 @@ def upload_blobs(files: list[tuple[str, str]], owner: str, repo: str, token: str
         )
         if status not in (200, 201):
             raise RuntimeError(f"blob 上传失败 [{relpath}] ({status}): {body}")
-        size = len(raw)
-        print(f"  [{i:>2}/{len(files)}] {relpath}  ({size:,} B)")
+        if body["sha"] != sha:
+            raise RuntimeError(
+                f"blob sha 不一致 [{relpath}]：本地 {sha} / 远端 {body['sha']}"
+            )
+        print(f"  [{i:>2}/{len(files)}] {relpath}  ({len(raw):,} B)")
         tree.append({"path": relpath, "mode": mode, "type": "blob", "sha": body["sha"]})
     return tree
 
@@ -209,14 +225,14 @@ def main() -> int:
     args = ap.parse_args()
 
     files = list_tracked_files()
-    total = sum((REPO_ROOT / p).stat().st_size for _, p in files if (REPO_ROOT / p).is_file())
+    total = sum(len(blob_bytes(sha)) for _, _, sha in files)
     print(f"仓库根目录：{REPO_ROOT}")
     print(f"待推送文件：{len(files)} 个，共 {total:,} 字节（{total / 1048576:.2f} MB）")
     print()
 
     if args.dry_run:
-        for mode, relpath in files:
-            flag = "BIN" if (REPO_ROOT / relpath).read_bytes()[:1] == b"\x00" else "   "
+        for mode, relpath, sha in files:
+            flag = "BIN" if blob_bytes(sha)[:1] == b"\x00" else "   "
             print(f"  {flag} {mode}  {relpath}")
         print("\n[dry-run] 未联网、未做任何改动。")
         return 0
