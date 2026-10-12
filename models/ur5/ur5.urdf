@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  UR5 机械臂 · 教学用纯 URDF（不依赖 ROS / xacro）
+  =================================================
+  本文件由 tools/fetch_ur5_model.py 依据 Universal Robots 官方描述包自动生成。
+
+  上游：https://github.com/ros-industrial/universal_robot  (ur_description, noetic-devel)
+  参数来源：ur_description/config/ur5/{default_kinematics, joint_limits,
+            physical_parameters, visual_parameters}.yaml  —— 已存档于 ./config/
+
+  结构（6 个可动关节，全部绕自身 z 轴转）：
+      base_link ─(fixed)─ base_link_inertia ─ shoulder_pan ─ shoulder_link
+        └─ shoulder_lift ─ upper_arm_link ─ elbow ─ forearm_link
+        └─ wrist_1 ─ wrist_1_link ─ wrist_2 ─ wrist_2_link ─ wrist_3 ─ wrist_3_link
+        └─(fixed)─ flange ─(fixed)─ tool0
+
+  与上游 xacro 的差异：把 ${prefix} 置空；网格路径由 package:// 改为相对路径
+  ./meshes/...；去掉 transmission / ros2_control / safety_controller（教学不需要）。
+-->
+<robot name="ur5">
+  <!-- ================= links ================= -->
+  <link name="base_link"/>
+
+  <link name="base_link_inertia">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 3.141592653589793"/>
+      <geometry>
+        <mesh filename="meshes/visual/base.dae"/>
+      </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 3.141592653589793"/>
+      <geometry>
+        <mesh filename="meshes/collision/base.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="4.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.00443333156" ixy="0" ixz="0" iyy="0.00443333156" iyz="0" izz="0.0072"/>
+    </inertial>
+  </link>
+  <link name="shoulder_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 3.141592653589793"/>
+      <geometry>
+        <mesh filename="meshes/visual/shoulder.dae"/>
+      </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 3.141592653589793"/>
+      <geometry>
+        <mesh filename="meshes/collision/shoulder.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="3.7"/>
+      <origin xyz="0 -0.00193 -0.02561" rpy="0 0 0"/>
+      <inertia ixx="0.014972358333333331" ixy="0" ixz="0" iyy="0.014972358333333331" iyz="0" izz="0.01040625"/>
+    </inertial>
+  </link>
+  <link name="upper_arm_link">
+    <visual>
+      <origin xyz="0 0 0.13585" rpy="1.5707963267948966 0 -1.5707963267948966"/>
+      <geometry>
+        <mesh filename="meshes/visual/upperarm.dae"/>
+      </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.13585" rpy="1.5707963267948966 0 -1.5707963267948966"/>
+      <geometry>
+        <mesh filename="meshes/collision/upperarm.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="8.393"/>
+      <origin xyz="-0.2125 0 0.11336" rpy="0 1.5707963267948966 0"/>
+      <inertia ixx="0.13388583541666665" ixy="0" ixz="0" iyy="0.13388583541666665" iyz="0" izz="0.0151074"/>
+    </inertial>
+  </link>
+  <link name="forearm_link">
+    <visual>
+      <origin xyz="0 0 0.0165" rpy="1.5707963267948966 0 -1.5707963267948966"/>
+      <geometry>
+        <mesh filename="meshes/visual/forearm.dae"/>
+      </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.0165" rpy="1.5707963267948966 0 -1.5707963267948966"/>
+      <geometry>
+        <mesh filename="meshes/collision/forearm.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="2.33"/>
+      <origin xyz="-0.24225 0 0.0265" rpy="0 1.5707963267948966 0"/>
+      <inertia ixx="0.031216803515624995" ixy="0" ixz="0" iyy="0.031216803515624995" iyz="0" izz="0.004095"/>
+    </inertial>
+  </link>
+  <link name="wrist_1_link">
+    <visual>
+      <origin xyz="0 0 -0.093" rpy="1.5707963267948966 0 0"/>
+      <geometry>
+        <mesh filename="meshes/visual/wrist1.dae"/>
+      </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.093" rpy="1.5707963267948966 0 0"/>
+      <geometry>
+        <mesh filename="meshes/collision/wrist1.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.219"/>
+      <origin xyz="0 -0.01634 -0.0018" rpy="0 0 0"/>
+      <inertia ixx="0.002013889583333333" ixy="0" ixz="0" iyy="0.002013889583333333" iyz="0" izz="0.0021942"/>
+    </inertial>
+  </link>
+  <link name="wrist_2_link">
+    <visual>
+      <origin xyz="0 0 -0.095" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/visual/wrist2.dae"/>
+      </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.095" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/collision/wrist2.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.219"/>
+      <origin xyz="0 0.01634 -0.0018" rpy="0 0 0"/>
+      <inertia ixx="0.0018310395833333333" ixy="0" ixz="0" iyy="0.0018310395833333333" iyz="0" izz="0.0021942"/>
+    </inertial>
+  </link>
+  <link name="wrist_3_link">
+    <visual>
+      <origin xyz="0 0 -0.0818" rpy="1.5707963267948966 0 0"/>
+      <geometry>
+        <mesh filename="meshes/visual/wrist3.dae"/>
+      </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.0818" rpy="1.5707963267948966 0 0"/>
+      <geometry>
+        <mesh filename="meshes/collision/wrist3.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.1879"/>
+      <origin xyz="0 0 -0.001159" rpy="0 0 0"/>
+      <inertia ixx="8.062475833333332e-05" ixy="0" ixz="0" iyy="8.062475833333332e-05" iyz="0" izz="0.0001321171875"/>
+    </inertial>
+  </link>
+  <link name="flange"/>
+  <link name="tool0"/>
+
+  <!-- ================= joints ================= -->
+  <!-- 固定帧：REP-103 的 base_link(X+ 前) 与 UR 控制器 Base 坐标系相差绕 Z 的 pi -->
+  <joint name="base_link-base_link_inertia" type="fixed">
+    <parent link="base_link"/>
+    <child link="base_link_inertia"/>
+    <origin xyz="0 0 0" rpy="0 0 3.141592653589793"/>
+  </joint>
+  <!-- 肩部回转：整条臂绕底座竖直轴转（底座方位角） -->
+  <joint name="shoulder_pan_joint" type="revolute">
+    <parent link="base_link_inertia"/>
+    <child link="shoulder_link"/>
+    <origin xyz="0 0 0.089159" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-6.283185307179586" upper="6.283185307179586" effort="150.0" velocity="3.141592653589793"/>
+    <dynamics damping="0" friction="0"/>
+  </joint>
+  <!-- 肩部俯仰：大臂抬起/放下（平面 2R 的『第一根杆』） -->
+  <joint name="shoulder_lift_joint" type="revolute">
+    <parent link="shoulder_link"/>
+    <child link="upper_arm_link"/>
+    <origin xyz="0 0 0" rpy="1.5707963267948966 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-6.283185307179586" upper="6.283185307179586" effort="150.0" velocity="3.141592653589793"/>
+    <dynamics damping="0" friction="0"/>
+  </joint>
+  <!-- 肘部：小臂弯曲（平面 2R 的『第二根杆』） -->
+  <joint name="elbow_joint" type="revolute">
+    <parent link="upper_arm_link"/>
+    <child link="forearm_link"/>
+    <origin xyz="-0.425 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-3.141592653589793" upper="3.141592653589793" effort="150.0" velocity="3.141592653589793"/>
+    <dynamics damping="0" friction="0"/>
+  </joint>
+  <!-- 腕 1：绕小臂轴线转（前臂滚转） -->
+  <joint name="wrist_1_joint" type="revolute">
+    <parent link="forearm_link"/>
+    <child link="wrist_1_link"/>
+    <origin xyz="-0.39225 0 0.10915" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-6.283185307179586" upper="6.283185307179586" effort="28.0" velocity="3.141592653589793"/>
+    <dynamics damping="0" friction="0"/>
+  </joint>
+  <!-- 腕 2：手腕俯仰 -->
+  <joint name="wrist_2_joint" type="revolute">
+    <parent link="wrist_1_link"/>
+    <child link="wrist_2_link"/>
+    <origin xyz="0 -0.09465 0" rpy="1.5707963267948966 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-6.283185307179586" upper="6.283185307179586" effort="28.0" velocity="3.141592653589793"/>
+    <dynamics damping="0" friction="0"/>
+  </joint>
+  <!-- 腕 3：末端自转（三个腕关节轴交于一点 → 球形手腕） -->
+  <joint name="wrist_3_joint" type="revolute">
+    <parent link="wrist_2_link"/>
+    <child link="wrist_3_link"/>
+    <origin xyz="0 0.0823 0" rpy="1.570796326589793 3.141592653589793 3.141592653589793"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-6.283185307179586" upper="6.283185307179586" effort="28.0" velocity="3.141592653589793"/>
+    <dynamics damping="0" friction="0"/>
+  </joint>
+  <!-- 法兰面（末端执行器安装基准） -->
+  <joint name="wrist_3-flange" type="fixed">
+    <parent link="wrist_3_link"/>
+    <child link="flange"/>
+    <origin xyz="0 0 0" rpy="0 -1.5707963267948966 -1.5707963267948966"/>
+  </joint>
+
+  <!-- tool0：全零工具坐标系（X+ 左、Y+ 上、Z+ 前） -->
+  <joint name="flange-tool0" type="fixed">
+    <parent link="flange"/>
+    <child link="tool0"/>
+    <origin xyz="0 0 0" rpy="1.5707963267948966 0 1.5707963267948966"/>
+  </joint>
+</robot>

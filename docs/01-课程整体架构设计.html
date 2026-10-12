@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>用三角函数"看见"机械臂 · 课程整体架构设计</title>
+<style>
+  :root{
+    --ink:#1a2233;
+    --ink-2:#3d4a60;
+    --ink-3:#6b7891;
+    --line:#e3e8f0;
+    --line-2:#eef2f8;
+    --bg:#f7f9fc;
+    --card:#ffffff;
+    --accent:#2f5bd7;
+    --accent-soft:#eef3fe;
+    --p1:#2f5bd7;   /* 阶段一 */
+    --p2:#0f9d8f;   /* 阶段二 */
+    --p3:#c2681b;   /* 阶段三 */
+    --p4:#8a3fb5;   /* 阶段四 */
+    --p5:#c0392b;   /* 阶段五 */
+    --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Microsoft YaHei","PingFang SC","Hiragino Sans GB","Source Han Sans SC",-apple-system,sans-serif;
+    line-height:1.75;
+    font-size:15px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .page{max-width:960px;margin:0 auto;padding:48px 40px 80px;}
+
+  /* 封面 */
+  .cover{
+    background:linear-gradient(135deg,#20356e 0%,#2f5bd7 55%,#3f74e8 100%);
+    color:#fff;border-radius:20px;padding:44px 44px 38px;position:relative;overflow:hidden;
+    box-shadow:0 14px 40px rgba(47,91,215,.28);
+  }
+  .cover::after{
+    content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+    border-radius:50%;border:2px solid rgba(255,255,255,.18);
+  }
+  .cover::before{
+    content:"";position:absolute;right:40px;bottom:-90px;width:180px;height:180px;
+    border-radius:50%;background:rgba(255,255,255,.08);
+  }
+  .cover .kicker{font-size:13px;letter-spacing:.22em;opacity:.85;margin-bottom:14px;}
+  .cover h1{font-size:34px;margin:0 0 6px;line-height:1.3;letter-spacing:.01em;}
+  .cover h2{font-size:17px;font-weight:400;margin:0 0 22px;opacity:.92;}
+  .tags{display:flex;flex-wrap:wrap;gap:8px;position:relative;z-index:2;}
+  .tag{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);
+    padding:5px 12px;border-radius:999px;font-size:12.5px;backdrop-filter:blur(2px);}
+
+  h2.sec{
+    font-size:21px;margin:52px 0 18px;padding-left:14px;border-left:5px solid var(--accent);
+    letter-spacing:.01em;
+  }
+  h3.sub{font-size:16.5px;margin:28px 0 10px;color:var(--ink);}
+  h4.mini{font-size:15px;margin:20px 0 8px;color:var(--accent);}
+  p{margin:10px 0;}
+  ul,ol{margin:10px 0;padding-left:22px;}
+  li{margin:5px 0;}
+  strong{color:#16203a;}
+  code{font-family:var(--mono);background:var(--line-2);padding:1px 6px;border-radius:5px;
+    font-size:13px;color:#25324d;}
+  pre{
+    background:#1c2437;color:#e6ecff;border-radius:12px;padding:16px 18px;overflow:auto;
+    font-family:var(--mono);font-size:12.8px;line-height:1.65;margin:14px 0;
+  }
+  pre code{background:none;color:inherit;padding:0;}
+
+  blockquote{
+    margin:18px 0;padding:14px 20px;background:var(--accent-soft);border-left:4px solid var(--accent);
+    border-radius:0 10px 10px 0;color:var(--ink-2);
+  }
+  blockquote p{margin:4px 0;}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 26px;
+    box-shadow:0 3px 14px rgba(26,34,51,.045);margin:16px 0;}
+
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;background:var(--card);
+    border-radius:12px;overflow:hidden;border:1px solid var(--line);}
+  th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--line-2);vertical-align:top;}
+  th{background:#f1f5fd;color:var(--ink-2);font-weight:600;font-size:13.5px;}
+  tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:#fafcff;}
+
+  /* 阶段流 */
+  .flow{display:flex;gap:10px;margin:24px 0;flex-wrap:wrap;}
+  .flow .ph{flex:1;min-width:150px;border-radius:14px;padding:16px 16px 14px;color:#fff;position:relative;}
+  .flow .ph .n{font-size:12px;opacity:.85;letter-spacing:.12em;}
+  .flow .ph .t{font-size:16px;font-weight:700;margin:4px 0 6px;}
+  .flow .ph .d{font-size:12.5px;opacity:.92;line-height:1.55;}
+  .ph1{background:linear-gradient(160deg,#3a6ae0,#2f5bd7);}
+  .ph2{background:linear-gradient(160deg,#12a897,#0f9d8f);}
+  .ph3{background:linear-gradient(160deg,#d1792a,#c2681b);}
+  .ph4{background:linear-gradient(160deg,#9a52c6,#8a3fb5);}
+  .ph5{background:linear-gradient(160deg,#cf4a3b,#c0392b);}
+
+  /* 循环示意 */
+  .loop{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap;margin:20px 0;}
+  .loop .st{flex:1;min-width:130px;background:var(--card);border:1px solid var(--line);
+    border-radius:12px;padding:14px;text-align:center;}
+  .loop .st .b{font-size:18px;font-weight:700;color:var(--accent);}
+  .loop .st .s{font-size:12.5px;color:var(--ink-3);margin-top:4px;}
+  .loop .arw{align-self:center;color:#b7c2d6;font-size:18px;}
+
+  .badge{display:inline-block;font-size:12px;padding:2px 9px;border-radius:999px;
+    background:var(--accent-soft);color:var(--accent);margin-right:6px;font-weight:600;}
+
+  .mod{border:1px solid var(--line);border-radius:14px;background:var(--card);
+    margin:16px 0;overflow:hidden;}
+  .mod .hd{display:flex;align-items:center;gap:12px;padding:14px 20px;background:#f6f9ff;
+    border-bottom:1px solid var(--line);}
+  .mod .hd .id{font-family:var(--mono);font-weight:700;font-size:13px;background:var(--accent);
+    color:#fff;padding:3px 10px;border-radius:8px;}
+  .mod .hd .nm{font-weight:700;font-size:15.5px;}
+  .mod .hd .hrs{margin-left:auto;font-size:12.5px;color:var(--ink-3);white-space:nowrap;}
+  .mod .bd{padding:16px 20px 8px;}
+  .mod .bd .row{display:flex;gap:10px;margin-bottom:10px;font-size:14px;}
+  .mod .bd .lb{flex:0 0 78px;color:var(--ink-3);font-weight:600;font-size:13px;padding-top:1px;}
+  .mod .bd .vl{flex:1;}
+
+  .callout{background:#fff8ec;border:1px solid #f4dfbb;border-radius:12px;padding:14px 18px;
+    margin:16px 0;font-size:14px;color:#7a5410;}
+  .callout b{color:#8a5a08;}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media(max-width:720px){.grid2{grid-template-columns:1fr;}.flow{flex-direction:column;}}
+  .mini-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;}
+  .mini-card h4{margin:0 0 8px;font-size:14.5px;color:var(--accent);}
+
+  .foot{margin-top:56px;padding-top:20px;border-top:1px dashed var(--line);
+    color:var(--ink-3);font-size:13px;text-align:center;}
+  .toc{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;font-size:14px;margin-top:6px;}
+  .toc a{color:var(--ink-2);text-decoration:none;border-bottom:1px solid transparent;}
+  .toc a:hover{color:var(--accent);border-bottom-color:var(--accent);}
+  @media print{
+    body{background:#fff;font-size:12px;}
+    .page{max-width:100%;padding:12px;}
+    .cover{box-shadow:none;}
+    .mod,.card,table{break-inside:avoid;}
+    h2.sec{break-after:avoid;}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- 封面 -->
+  <header class="cover">
+    <div class="kicker">高中跨学科探究 · 课程整体架构设计</div>
+    <h1>用三角函数"看见"机械臂</h1>
+    <h2>从角度到空间：机械臂运动学探究项目课</h2>
+    <div class="tags">
+      <span class="tag">数学 × 信息科技 × 通用技术</span>
+      <span class="tag">深度项目课 · 26 课时</span>
+      <span class="tag">主力 UR5 · 对照宇树 R1</span>
+      <span class="tag">基础 Python</span>
+      <span class="tag">仿真为主</span>
+      <span class="tag">理论带动实践 · 代码转化实操</span>
+    </div>
+  </header>
+
+  <div class="callout" style="margin-top:26px;">
+    <b>v3 修订说明（2026-10-12）：</b><b>主力机型改为 UR5（6 轴，标准 DH，关节全部绕 z），宇树 R1（7 轴）作为对照</b>，两机共用同一套框架与同一份旋转积木。本次修订还纠正了一条重要事实：<b>UR5 并不是"球形手腕"</b>——其轴 4 与轴 6 平行、相距 <b>94.65 mm</b>，三轴不共点（最大偏差 47.33 mm），因此"位置只由前三个关节决定"在 UR5 上<b>不成立</b>。M9–M11 相应把经典解耦推导降级为"子问题级近似"，并增设腕部几何<b>实测反例检查</b>（MDPI <i>Robotics</i> 2023、arXiv:2510.19081 均有记载）。详见 <code>docs/02</code>、<code>docs/03</code>、<code>docs/04</code>。
+  </div>
+
+  <!-- 目录 -->
+  <h2 class="sec">目录</h2>
+  <div class="toc">
+    <a href="#s1">一、课程定位与设计理念</a>
+    <a href="#s2">二、学情分析</a>
+    <a href="#s3">三、教学目标（三维目标）</a>
+    <a href="#s4">四、课程总架构（五阶段 · 26 课时）</a>
+    <a href="#s5">五、统一教学节奏："探—推—写—验"</a>
+    <a href="#s6">六、模块详解</a>
+    <a href="#s7">七、仿真平台接口契约</a>
+    <a href="#s8">八、评估方案</a>
+    <a href="#s9">九、风险预案与教学建议</a>
+    <a href="#s10">十、资源清单与分工</a>
+    <a href="#sA">附录 A · 关键公式速查</a>
+  </div>
+
+  <!-- 一 -->
+  <h2 class="sec" id="s1">一、课程定位与设计理念</h2>
+
+  <h3 class="sub">1.1 一个驱动问题</h3>
+  <blockquote>
+    <p><strong>机械臂只有几个"会转的关节"，它怎么"知道"自己的手在空间的什么地方、朝向哪里？</strong></p>
+    <p><strong>反过来，我想让它的手精准到达某个位置和姿态，它又该怎么算每个关节要转多少度？</strong></p>
+  </blockquote>
+  <p>这个"正着算"（<strong>正运动学 FK</strong>）与"反着算"（<strong>逆运动学 IK</strong>）的问题，是机器人学的第一道门槛，也<strong>恰好是一道纯粹的三角几何题</strong>。本课程的全部设计都围绕这句话展开。</p>
+
+  <h3 class="sub">1.2 核心理念：三角函数是"空间的语言"</h3>
+  <p>高中课上的三角函数，常被当作"算三角形边角"的解题工具。本课程要传递一个更大的观念：</p>
+  <ul>
+    <li><strong>sin、cos 的本质是坐标</strong>——单位圆上一个角度 θ，对应的点就是 <code>(cos θ, sin θ)</code>；</li>
+    <li>一根长度固定、只能绕一端转动的<strong>连杆</strong>，末端坐标就是 <code>(L·cos θ, L·sin θ)</code>——三角函数就是"角度→位置"的翻译器；</li>
+    <li>机械臂 = 一串连杆 = 一串三角函数的<strong>叠加与复合</strong>；</li>
+    <li>平面上的"长度 + 角度"（极坐标）升维到空间，自然变成"长度 + 两个角度"（<strong>球坐标</strong>）——它依然全是三角函数。</li>
+  </ul>
+  <p>一句话的世界观：<strong>把机械臂看成"会动的三角函数"，把运动学看成"解一道几何题"。</strong></p>
+
+  <h3 class="sub">1.3 机型选择：UR5 打主线，R1 作对照</h3>
+  <p>平面臂（2–3 自由度）用三角函数即可直接求解，是极好的地基；但真实机械臂活在三维空间里。课程采用<strong>两台真实机械臂</strong>，路线是"<strong>2D 打地基 → 3D 起高楼</strong>"：</p>
+  <ul>
+    <li><strong>前段（阶段二）</strong>用抽象的平面臂把 FK / IK 的几何思想讲透，认知负担最低；</li>
+    <li><strong>后段（阶段三、四）</strong>升维到真实机型：三维并没有推翻三角函数，只是把"一个角度"变成"多个角度"、把"圆"变成"球"、把"一次旋转"变成"旋转矩阵的堆叠"。</li>
+  </ul>
+
+  <h4 style="margin:14px 0 6px;font-size:15px;">为什么主力用 UR5？</h4>
+  <table>
+    <thead><tr><th style="width:24%">理由</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td><b>推导最干净</b></td><td>6 个关节的 <code>axis</code> <b>全是 <code>0 0 1</code></b>，相邻轴的 90° 夹角藏在<b>关节原点的 <code>rpy</code></b> 里——这正是标准 DH 的 <b>α 角</b>，学生第一次能"看见"DH 参数长什么样</td></tr>
+      <tr><td><b>教科书标准</b></td><td>UR5 的 DH 表广为流传，可与课程推导逐一对照；本仓库已用独立 DH 矩阵实现交叉验证（吻合到 1e-16）</td></tr>
+      <tr><td><b>解有限、限位宽</b></td><td>除肘关节 ±180° 外全部 ±360°，多解不会被限位砍掉，"最多 8 组解"能完整看到</td></tr>
+      <tr><td><b>反例价值</b></td><td><b>它偏偏不是球形手腕</b>——恰好推翻课本那句常见的简化假设，是绝佳的批判性思维素材</td></tr>
+    </tbody>
+  </table>
+
+  <h4 style="margin:14px 0 6px;font-size:15px;">为什么还要带上宇树 R1？</h4>
+  <p>R1 是 7 轴仿生机械臂，比 UR5 <strong>多一个"冗余自由度"</strong>：同一目标位姿往往有<strong>无穷多组</strong>关节角。这既是难点，也是绝佳的"工程取舍"讨论素材（作为<strong>拓展层</strong>内容）。更妙的是：<strong>R1 的腕部反而比 UR5 更接近球形手腕</strong>（三轴偏差仅 5.0 mm，而 UR5 是 47.3 mm）——两台机器一对比，"课本假设 / 真实机型"的落差立刻变得具体可测。</p>
+
+  <h4 style="margin:14px 0 6px;font-size:15px;">两台机器一表对照</h4>
+  <table>
+    <thead><tr><th></th><th>UR5（主力）</th><th>宇树 R1（对照）</th></tr></thead>
+    <tbody>
+      <tr><td>自由度</td><td><b>6</b></td><td><b>7</b>（含冗余）</td></tr>
+      <tr><td>关节轴排布</td><td><code>z z z z z z</code></td><td><code>-z x y x y -x -z</code></td></tr>
+      <tr><td>零位末端位置</td><td>(0.817, 0.191, −0.005) m</td><td>(0.003, −0.034, 0.193) m</td></tr>
+      <tr><td>可达半径</td><td>0.036 – 1.028 m</td><td>0.013 – 0.542 m</td></tr>
+      <tr><td>腕部几何</td><td><b>非球形</b>（轴 4 ∥ 轴 6，相距 94.65 mm）</td><td><b>近似球形</b>（偏差 5.0 mm）</td></tr>
+      <tr><td>位置/姿态解耦</td><td>不成立</td><td>近似成立</td></tr>
+      <tr><td>IK 策略</td><td>可解析（含腕部耦合修正）</td><td>数值解 + 选解准则</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout"><b>教学取舍（重要）：</b>两台机器的关节轴排布都不简单，因此采用<b>分层策略</b>：① 用平面 2R 把几何原理讲透（阶段二）；② 用"旋转矩阵积木"搭出<b>完整正运动学</b>——三块旋转积木写对，两台真实机械臂的 FK 都能精确复现（阶段三）；③ 逆运动学的<b>解析推导</b>放在可解子问题上（平面 2R、欧拉角），<b>整臂 IK 用平台数值解作真值对照</b>（阶段四）。既保住"三角函数能算清"的爽感，又不回避真实机械臂的复杂性。</div>
+
+  <h3 class="sub">1.4 三条设计原则</h3>
+  <table>
+    <thead><tr><th>原则</th><th>含义</th><th>落地方式</th></tr></thead>
+    <tbody>
+      <tr><td><strong>理论带动实践</strong></td><td>先弄清"为什么"，再动手做"怎么做"</td><td>每个模块先推导公式，再写代码</td></tr>
+      <tr><td><strong>代码转化成实操</strong></td><td>代码不是终点，而是驱动机械臂"动起来"的手</td><td>每段代码都对应一次仿真演示与验收</td></tr>
+      <tr><td><strong>预测—验证闭环</strong></td><td>数学推导的答案必须能被仿真检验</td><td>学生先手算预测，再跑仿真比对误差</td></tr>
+    </tbody>
+  </table>
+
+  <!-- 二 -->
+  <h2 class="sec" id="s2">二、学情分析</h2>
+
+  <h3 class="sub">2.1 学生已具备</h3>
+  <div class="grid2">
+    <div class="mini-card">
+      <h4>数学基础</h4>
+      <p>任意角三角函数、弧度制、单位圆、正弦/余弦定理、两点间距离公式、平面向量初步、空间直角坐标系（多数已学）。</p>
+    </div>
+    <div class="mini-card">
+      <h4>编程基础</h4>
+      <p>变量、列表、循环、函数、条件判断、库调用（<code>numpy</code> / <code>matplotlib</code> 基础）。</p>
+    </div>
+  </div>
+
+  <h3 class="sub">2.2 认知缺口与难点</h3>
+  <table>
+    <thead><tr><th>缺口</th><th>表现</th><th>补救策略</th></tr></thead>
+    <tbody>
+      <tr><td><strong>空间想象力</strong></td><td>难以在脑中"转动"三维物体</td><td>大量动画可视化；先 2D 后 3D；用手势辅助</td></tr>
+      <tr><td><strong>旋转矩阵的抽象感</strong></td><td>觉得矩阵是"黑魔法"</td><td>明确"矩阵 = 一批 sin/cos 的打包"，逐列讲每个元素来自哪条三角关系</td></tr>
+      <tr><td><strong>姿态 / 欧拉角</strong></td><td>分不清"位置"与"姿态"</td><td>用"手的坐标"与"手心的朝向"做直观类比</td></tr>
+      <tr><td><strong>多解 &amp; 奇异位形</strong></td><td>不易理解为何"有时无解"</td><td>用"肘上/肘下"手势 + 可达空间可视化</td></tr>
+      <tr><td><strong>数学 ↔ 代码对应</strong></td><td>会推公式但不知如何写代码</td><td>提供"填空式"代码骨架，公式与函数逐行对照</td></tr>
+      <tr><td><strong>调试能力</strong></td><td>出错后不会定位</td><td>引入"预测—验证"日志表与调试清单</td></tr>
+    </tbody>
+  </table>
+  <div class="callout"><b>前置微补（阶段一内嵌，约 0.5 课时）：</b>弧度与角度互换、<code>atan2</code> 的四象限含义、<code>numpy</code> 数组基本操作、仿真平台基本操作。</div>
+
+  <!-- 三 -->
+  <h2 class="sec" id="s3">三、教学目标（三维目标）</h2>
+  <div class="grid2">
+    <div class="mini-card">
+      <h4>① 知识与理解</h4>
+      <ol>
+        <li>说清 FK 与 IK 的定义、区别与用途；</li>
+        <li>会用极坐标（平面）与球坐标（空间）表示位置；</li>
+        <li>掌握 1R / 2R / 3R 平面臂的 FK 与 IK 推导；</li>
+        <li>理解旋转矩阵的三角本质及欧拉角表示姿态；</li>
+        <li>理解 6-DOF 臂的位置—姿态解耦与腕心分解。</li>
+      </ol>
+    </div>
+    <div class="mini-card">
+      <h4>② 过程与能力</h4>
+      <ol>
+        <li>把物理问题抽象为几何模型并完成推导；</li>
+        <li>用 Python 实现 FK / IK 并借仿真验证；</li>
+        <li>分析多解、奇异位形、可达空间并做取舍；</li>
+        <li>对轨迹进行插值与平滑，让动作连贯。</li>
+      </ol>
+    </div>
+  </div>
+  <div class="mini-card" style="margin-top:14px;">
+    <h4>③ 素养与价值</h4>
+    <ol>
+      <li>建立"数学是描述世界的工具，而非一堆题目"的观念；</li>
+      <li>发展计算思维（分解、抽象、自动化、容错）；</li>
+      <li>体验工程迭代：出错 → 定位 → 修正 → 再验证；</li>
+      <li>形成团队协作与成果表达能力。</li>
+    </ol>
+  </div>
+
+  <!-- 四 -->
+  <h2 class="sec" id="s4">四、课程总架构（五阶段 · 26 课时）</h2>
+
+  <div class="flow">
+    <div class="ph ph1"><div class="n">阶段一 · 2课时</div><div class="t">启航</div><div class="d">认识问题与平台<br>FK/IK 是什么 · 三角是机器人之母语 · 认识 UR5 与 R1</div></div>
+    <div class="ph ph2"><div class="n">阶段二 · 6课时</div><div class="t">平面地基</div><div class="d">角度→位置的语言<br>单位圆坐标化 · 平面 FK · 平面 IK · 轨迹初探</div></div>
+    <div class="ph ph3"><div class="n">阶段三 · 6课时</div><div class="t">升维</div><div class="d">三角如何"包裹"空间<br>球坐标 · 旋转矩阵的三角本质 · 结构拆解 + 3D FK</div></div>
+    <div class="ph ph4"><div class="n">阶段四 · 6课时</div><div class="t">三维逆解</div><div class="d">几何分解的胜利<br>位置逆解(腕心法) · 姿态逆解 · 多解/奇异/可达空间</div></div>
+    <div class="ph ph5"><div class="n">阶段五 · 6课时</div><div class="t">综合项目</div><div class="d">让机械臂真正做事<br>轨迹规划 · 综合任务开发 · 展示与答辩</div></div>
+  </div>
+
+  <h3 class="sub">课时分配表</h3>
+  <table>
+    <thead><tr><th>阶段</th><th>模块</th><th>主题</th><th>课时</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="1"><strong>一 · 启航</strong></td><td>M1</td><td>机械臂怎么"知道"手在哪？——FK/IK 与三角的语言</td><td>2</td></tr>
+      <tr><td rowspan="4"><strong>二 · 平面地基</strong></td><td>M2</td><td>单位圆与"角度坐标"：把一根连杆变成一对 sin/cos</td><td>1</td></tr>
+      <tr><td>M3</td><td>平面正运动学：1R → 2R → 3R</td><td>2</td></tr>
+      <tr><td>M4</td><td>平面逆运动学：余弦定理 + atan2，多解与可达空间</td><td>2</td></tr>
+      <tr><td>M5</td><td>轨迹初探：关节空间 vs 笛卡尔空间</td><td>1</td></tr>
+      <tr><td rowspan="3"><strong>三 · 升维</strong></td><td>M6</td><td>三维坐标与球坐标：三角的升维</td><td>2</td></tr>
+      <tr><td>M7</td><td>旋转矩阵的三角本质与姿态 / 欧拉角</td><td>2</td></tr>
+      <tr><td>M8</td><td>UR5 结构拆解 + DH 与三维正运动学（变换链）</td><td>2</td></tr>
+      <tr><td rowspan="3"><strong>四 · 三维逆解</strong></td><td>M9</td><td>位置逆解：球坐标 + 余弦定理（子问题）与腕部耦合</td><td>2</td></tr>
+      <tr><td>M10</td><td>姿态逆解：欧拉角，以及"球形手腕"假设的实测检验</td><td>2</td></tr>
+      <tr><td>M11</td><td>整合、多解、奇异与冗余（UR5 ↔ R1 对照）</td><td>2</td></tr>
+      <tr><td rowspan="3"><strong>五 · 综合项目</strong></td><td>M12</td><td>轨迹规划与平滑</td><td>1</td></tr>
+      <tr><td>M13</td><td>综合任务开发（工作坊）</td><td>3</td></tr>
+      <tr><td>M14</td><td>展示、答辩与评价</td><td>2</td></tr>
+      <tr><td colspan="3" style="text-align:right;font-weight:700;">合计</td><td><strong>26</strong></td></tr>
+    </tbody>
+  </table>
+
+  <!-- 五 -->
+  <h2 class="sec" id="s5">五、统一教学节奏："探—推—写—验"四步循环</h2>
+  <p>每个模块都遵循同一套节奏，让学生形成稳定的学习预期，也保证"理论带动实践"落到实处：</p>
+  <div class="loop">
+    <div class="st"><div class="b">① 探</div><div class="s">提出问题<br>激发疑问</div></div>
+    <div class="arw">→</div>
+    <div class="st"><div class="b">② 推</div><div class="s">理论推导<br>独立推公式</div></div>
+    <div class="arw">→</div>
+    <div class="st"><div class="b">③ 写</div><div class="s">代码实现<br>填空式翻译</div></div>
+    <div class="arw">→</div>
+    <div class="st"><div class="b">④ 验</div><div class="s">仿真验证<br>对照真值</div></div>
+  </div>
+  <h4 class="mini">"预测—验证"日志表（每模块必填）</h4>
+  <table>
+    <thead><tr><th>关节角 / 目标</th><th>我的手算预测</th><th>仿真真值</th><th>误差</th><th>差异原因</th></tr></thead>
+    <tbody>
+      <tr><td>例：θ1=30°, θ2=45°</td><td>末端 ≈ (?, ?)</td><td>(?, ?)</td><td>?</td><td>—</td></tr>
+    </tbody>
+  </table>
+  <p><em>设计意图：让数学推导的结论始终被仿真"审判"。当预测与真值不符时，学生被迫回到公式找 bug——这正是最有价值的学习时刻。</em></p>
+
+  <!-- 六 -->
+  <h2 class="sec" id="s6">六、模块详解</h2>
+  <p style="color:var(--ink-3);">每个模块统一给出：<span class="badge">目标</span><span class="badge">理论锚点</span><span class="badge">关键推导</span><span class="badge">代码任务</span><span class="badge">仿真实操</span><span class="badge">验收标准</span></p>
+
+  <h3 class="sub" style="color:var(--p1);">阶段一 · 启航</h3>
+  <div class="mod">
+    <div class="hd"><span class="id">M1</span><span class="nm">机械臂怎么"知道"手在哪？</span><span class="hrs">2 课时</span></div>
+    <div class="bd">
+      <div class="row"><div class="lb">目标</div><div class="vl">建立 FK/IK 直觉，认识 <b>UR5（主力）与宇树 R1（对照）</b>两台真实机械臂，熟悉仿真平台。</div></div>
+      <div class="row"><div class="lb">理论锚点</div><div class="vl">运动学问题定义；"长度 + 角度"与"坐标"两种描述。</div></div>
+      <div class="row"><div class="lb">关键探究</div><div class="vl">教师拖动仿真关节，学生观察末端如何移动 → 引出"关节空间"与"笛卡尔空间"。</div></div>
+      <div class="row"><div class="lb">代码任务</div><div class="vl">调用 <code>set_joints(q)</code> 与 <code>get_ee_pose()</code>，打印几组关节角对应的末端位置，填表观察规律。</div></div>
+      <div class="row"><div class="lb">仿真实操</div><div class="vl">自由拖动关节，记录 5 组"角度 ↔ 位置"数据。</div></div>
+      <div class="row"><div class="lb">验收</div><div class="vl">能用自己的话说明 FK 与 IK 的区别，并指出"哪一步最像解三角形"。</div></div>
+    </div>
+  </div>
+
+  <h3 class="sub" style="color:var(--p2);">阶段二 · 平面地基</h3>
+  <div class="mod">
+    <div class="hd"><span class="id">M2</span><span class="nm">单位圆与"角度坐标"</span><span class="hrs">1 课时</span></div>
+    <div class="bd">
+      <div class="row"><div class="lb">目标</div><div class="vl">把"角度"翻译为"位置坐标"，建立 <code>(L, θ) → (x, y)</code> 的语言。</div></div>
+      <div class="row"><div class="lb">理论锚点</div><div class="vl"><code>x = L·cos θ, y = L·sin θ</code>；弧度制与角度制互换。</div></div>
+      <div class="row"><div class="lb">关键推导</div><div class="vl">从单位圆出发，把半径 1 推广到连杆长度 L。</div></div>
+      <div class="row"><div class="lb">代码任务</div><div class="vl">实现 <code>link_end(L, theta) -&gt; (x, y)</code>，用 <code>matplotlib</code> 画出旋转的连杆。</div></div>
+      <div class="row"><div class="lb">仿真实操</div><div class="vl">让单连杆匀速旋转，观察末端画出<b>圆</b>——"圆的方程就是 sin/cos"。</div></div>
+      <div class="row"><div class="lb">验收</div><div class="vl">能解释"为什么末端轨迹是圆"，并预测 θ=90°、180°、270° 时末端坐标。</div></div>
+    </div>
+  </div>
+  <div class="mod">
+    <div class="hd"><span class="id">M3</span><span class="nm">平面正运动学：1R → 2R → 3R</span><span class="hrs">2 课时</span></div>
+    <div class="bd">
+      <div class="row"><div class="lb">目标</div><div class="vl">掌握多连杆正运动学；理解角度<b>累加</b>（复合旋转）。</div></div>
+      <div class="row"><div class="lb">理论锚点</div><div class="vl"><code>x = L1·cos θ1 + L2·cos(θ1+θ2)</code>，<code>y = L1·sin θ1 + L2·sin(θ1+θ2)</code>。</div></div>
+      <div class="row"><div class="lb">关键推导</div><div class="vl">第二个关节的角度为何是 <code>θ1+θ2</code>？——它<b>相对上一个连杆</b>转动，这是复合旋转的核心直觉，也是"变换链"的雏形。</div></div>
+      <div class="row"><div class="lb">代码任务</div><div class="vl">实现 <code>fk_2r(L1, L2, th1, th2)</code>，并推广到 3R。</div></div>
+      <div class="row"><div class="lb">仿真实操</div><div class="vl">固定 L1=L2，扫描 θ2 从 0° 到 180°，观察可达区域如何变化（从"点"到"面"）。</div></div>
+      <div class="row"><div class="lb">验收</div><div class="vl">预测一组 (θ1, θ2) 的末端坐标，与仿真对照，误差 &lt; 1e-3。</div></div>
+    </div>
+  </div>
+  <div class="mod">
+    <div class="hd"><span class="id">M4</span><span class="nm">平面逆运动学：余弦定理 + atan2</span><span class="hrs">2 课时</span></div>
+    <div class="bd">
+      <div class="row"><div class="lb">目标</div><div class="vl">由目标位置反解关节角；理解多解与可达空间。</div></div>
+      <div class="row"><div class="lb">理论锚点</div><div class="vl">余弦定理 <code>cos θ2 = (x²+y² − L1² − L2²)/(2·L1·L2)</code>；<code>θ1 = atan2(y,x) − atan2(L2·sin θ2, L1 + L2·cos θ2)</code>。</div></div>
+      <div class="row"><div class="lb">关键推导</div><div class="vl">把"两连杆 + 目标点"构成三角形：余弦定理求"肘角"，atan2 定方向。强调 atan2 能正确处理四象限。</div></div>
+      <div class="row"><div class="lb">概念难点</div><div class="vl"><b>多解</b>（肘上/肘下）、<b>可达空间</b>（圆环 <code>|L1−L2| ≤ r ≤ L1+L2</code>）、<b>奇异位形</b>（完全伸直时 θ2 敏感）。</div></div>
+      <div class="row"><div class="lb">代码任务</div><div class="vl">实现 <code>ik_2r(L1, L2, x, y)</code>（返回两组解），作图验证正解能回到原目标。</div></div>
+      <div class="row"><div class="lb">仿真实操</div><div class="vl">同一目标分别以"肘上/肘下"到达并比较；拖到边界外观察"不可达"。</div></div>
+      <div class="row"><div class="lb">验收</div><div class="vl">一目标点求出两条解，均能通过 FK 回到目标；能画出可达空间（圆环）。</div></div>
+    </div>
+  </div>
+  <div class="mod">
+    <div class="hd"><span class="id">M5</span><span class="nm">轨迹初探：关节空间 vs 笛卡尔空间</span><span class="hrs">1 课时</span></div>
+    <div class="bd">
+      <div class="row"><div class="lb">目标</div><div class="vl">让末端沿一条路径移动；理解两种空间的取舍。</div></div>
+      <div class="row"><div class="lb">理论锚点</div><div class="vl">插值思想；直线路径在关节空间里通常<b>不是直线</b>。</div></div>
+      <div class="row"><div class="lb">关键推导</div><div class="vl">把"从 A 到 B 走直线"离散成若干中间点，对每点调用 IK → 得到一串关节角序列。</div></div>
+      <div class="row"><div class="lb">代码任务</div><div class="vl">实现 <code>draw_line(A, B, n)</code>：采样 n 点 → 逐个 IK → 依次 <code>set_joints</code>。</div></div>
+      <div class="row"><div class="lb">仿真实操</div><div class="vl">让末端画出直线与圆；观察"每帧都要解一次 IK"。</div></div>
+      <div class="row"><div class="lb">验收</div><div class="vl">末端能画出规定的直线与圆，轨迹点误差 &lt; 2% 臂长。</div></div>
+    </div>
+  </div>
+
+  <h3 class="sub" style="color:var(--p3);">阶段三 · 升维</h3>
+  <div class="mod">
+    <div class="hd"><span class="id">M6</span><span class="nm">三维坐标与球坐标：三角的升维</span><span class="hrs">2 课时</span></div>
+    <div class="bd">
+      <div class="row"><div class="lb">目标</div><div class="vl">把平面极坐标推广到空间球坐标，理解"多一个自由角度"。</div></div>
+      <div class="row"><div class="lb">理论锚点</div><div class="vl"><code>x = r·sin φ·cos θ</code>，<code>y = r·sin φ·sin θ</code>，<code>z = r·cos φ</code>。</div></div>
+      <div class="row"><div class="lb">关键推导</div><div class="vl">先固定 φ=90°，发现它退化成平面极坐标；再放开 φ，观察 z 分量如何出现——<b>"升维 = 增加一个角度余弦"</b>。</div></div>
+      <div class="row"><div class="lb">代码任务</div><div class="vl">实现 <code>sph2cart(r, theta, phi)</code> 与反向 <code>cart2sph</code>。</div></div>
+      <div class="row"><div class="lb">仿真实操</div><div class="vl">让末端在<b>球面</b>上移动，观察两个角度分别控制"经度"与"纬度"。</div></div>
+      <div class="row"><div class="lb">验收</div><div class="vl">球坐标 ↔ 直角坐标互算，往返误差 &lt; 1e-6。</div></div>
+    </div>
+  </div>
+  <div class="mod">
+    <div class="hd"><span class="id">M7</span><span class="nm">旋转矩阵的三角本质与姿态</span><span class="hrs">2 课时</span></div>
+    <div class="bd">
+      <div class="row"><div class="lb">目标</div><div class="vl">理解姿态表示；看懂旋转矩阵里全是 sin/cos。</div></div>
+      <div class="row"><div class="lb">理论锚点</div><div class="vl"><code>Rz(α)</code> 的 9 个元素皆为 0 / ±1 / ±sin / ±cos（绕 y、x 轴同理）。</div></div>
+      <div class="row"><div class="lb">关键推导</div><div class="vl"><b>逐列拆解</b>：矩阵第一列 = "原 x 轴旋转后的新坐标" = <code>(cos α, sin α)</code>。学生亲手算出 Ry、Rx，建立"矩阵 ≠ 黑魔法"的观念。</div></div>
+      <div class="row"><div class="lb">概念难点</div><div class="vl">位置 vs 姿态；旋转<b>顺序</b>会影响结果（矩阵乘法不可交换）。</div></div>
+      <div class="row"><div class="lb">代码任务</div><div class="vl">实现 <code>Rz(α)</code>、<code>Ry(β)</code>、<code>Rx(γ)</code>，验证 <code>Rz(90°)·(1,0,0) = (0,1,0)</code>。</div></div>
+      <div class="row"><div class="lb">仿真实操</div><div class="vl">依次绕三轴旋转末端，比较不同旋转顺序的结果。</div></div>
+      <div class="row"><div class="lb">验收</div><div class="vl">能手写三个基本旋转矩阵；能解释"先转 z 再转 y ≠ 先转 y 再转 z"。</div></div>
+    </div>
+  </div>
+  <div class="mod">
+    <div class="hd"><span class="id">M8</span><span class="nm">UR5 结构拆解 + DH 与三维正运动学（变换链）</span><span class="hrs">2 课时</span></div>
+    <div class="bd">
+      <div class="row"><div class="lb">目标</div><div class="vl">看懂真实 UR5 的结构；用"变换链"算出末端位姿；第一次见到 DH 参数的真身。</div></div>
+      <div class="row"><div class="lb">理论锚点</div><div class="vl">末端位姿 = 各关节变换依次相乘：<code>T = T1·T2·…·T6</code>。</div></div>
+      <div class="row"><div class="lb">关键推导</div><div class="vl">每个 <code>Ti</code> = "固定平移(装在哪) × 固定旋转(朝哪边) × 绕本关节轴转 q"；这与 M3 中"角度累加"是完全相同的思想，只是从 2D 升到 3D。</div></div>
+      <div class="row"><div class="lb">★ 啊哈时刻</div><div class="vl">打开 UR5 的 URDF 会发现——<b>6 个关节的 <code>axis</code> 全是 <code>0 0 1</code></b>！那 90° 的夹角去哪了？答案藏在<b>关节原点的 <code>rpy</code></b> 里：<code>&lt;origin xyz="0 0 0" rpy="1.570796327 0 0"/&gt;</code>——这个 π/2 就是 <b>DH 的 α₁</b>。学生在这一刻会真正理解 DH 表不是凭空规定的。</div></div>
+      <div class="row"><div class="lb">概念难点</div><div class="vl">DH 四参数（a 连杆长 / d 偏置 / α 扭角 / θ 关节角）的直觉版（点到为止）。</div></div>
+      <div class="row"><div class="lb">代码任务</div><div class="vl">写好 <code>rot_x / rot_y / rot_z</code> 三块旋转积木（M7），平台自动拼出 UR5 完整正运动学——关节转用 <code>rot_z</code>、原点 rpy 里的 π/2 用 <code>rot_x</code>，<b>三块积木全部会被真正调用</b>。</div></div>
+      <div class="row"><div class="lb">仿真实操</div><div class="vl">设置关节角观察 UR5 姿态变化；用"平面 2R 类比"（只动 <code>shoulder_lift</code> + <code>elbow</code>）看末端被锁在竖直平面内。</div></div>
+      <div class="row"><div class="lb">验收</div><div class="vl">自实现 FK 与真值误差 &lt; 1e-9；能指出 UR5 关节原点里哪个 <code>rpy</code> 分量对应 DH 的哪个 α。</div></div>
+    </div>
+  </div>
+
+  <h3 class="sub" style="color:var(--p4);">阶段四 · 三维逆解</h3>
+  <div class="callout" style="border-left-color:#c0392b;">
+    <b>⚠️ 阶段四的核心修正：不要假设"球形手腕"</b><br>
+    教科书常说"六轴臂最后三根轴交于一点（球形手腕），于是位置与姿态可以解耦"。本课程要求学生亲手检验这句话，因为对 UR5 它<b>不成立</b>：
+    <table style="margin:10px 0 6px;">
+      <thead><tr><th>检查项</th><th>UR5 实测</th><th>宇树 R1 实测</th></tr></thead>
+      <tbody>
+        <tr><td>轴 4 ∩ 轴 5</td><td>相交</td><td>相距 0.70 mm</td></tr>
+        <tr><td>轴 5 ∩ 轴 6</td><td>相交</td><td>相距 10.00 mm</td></tr>
+        <tr><td><b>轴 4 ∥ 轴 6</b></td><td><b>平行，相距 94.65 mm</b></td><td>相交</td></tr>
+        <tr><td>三轴共点</td><td>❌ 最大偏差 <b>47.33 mm</b></td><td>❌ 但偏差仅 <b>5.01 mm</b>（近似球形）</td></tr>
+      </tbody>
+    </table>
+    后果：只转 <code>wrist_1</code> 90°，UR5 末端就移动 <b>133.9 mm</b>。所以"位置只由前三个关节决定"只是<b>近似</b>。<br>
+    <b>教学处理</b>：经典解耦推导<b>降级为"子问题级方法"</b>——平面 2R 逆解、欧拉角反解本身都是正确且必须掌握的工具；但要明确它们是<b>局部正确、整体近似</b>，并用<b>数值 IK 真值对照</b>让学生量化看到偏差。这个"发现课本假设失效"的过程，正是本课程最有价值的探究环节。<br>
+    复现命令：<code>python demos/demo_wrist_geometry.py</code>（详见 <code>docs/04</code>）
+  </div>
+  <div class="mod">
+    <div class="hd"><span class="id">M9</span><span class="nm">位置逆解：球坐标 + 余弦定理（子问题）与腕部耦合</span><span class="hrs">2 课时</span></div>
+    <div class="bd">
+      <div class="row"><div class="lb">目标</div><div class="vl">会用几何分解求"管位置"的关节角；理解几何分解<b>在什么时候成立、什么时候失效</b>。</div></div>
+      <div class="row"><div class="lb">理论锚点</div><div class="vl"><b>腕心（wrist center）</b>思想：设法找到一个点，使它的位置只由前几个关节决定，从而把问题拆成"管位置 + 管姿态"两半。</div></div>
+      <div class="row"><div class="lb">关键推导</div><div class="vl">① 先建"理想情形"：若最后三轴交于一点 <code>p_wc</code>，则 <code>p_wc = p_goal − d·(目标 z 轴方向)</code>，位置问题独立出来；② 对 <code>p_wc</code> 用<b>球坐标</b>求底座方位角、用<b>余弦定理 + atan2</b> 求两个俯仰角——这就是 M4 平面 2R 思想在空间中的落点；③ <b>然后检验</b>：UR5 三轴不共点，<code>p_wc</code> 并不真正独立于腕角。</div></div>
+      <div class="row"><div class="lb">代码任务</div><div class="vl">复用 M4 的 <code>ik_2r</code> 写出肩肘几何解；整臂解析解的复杂度由平台数值 IK 兜底对照。</div></div>
+      <div class="row"><div class="lb">仿真实操</div><div class="vl">给定目标点先解位置关节，观察腕心是否对准预期；<b>再转动腕关节，看腕心也会跟着动</b>——亲手推翻假设。</div></div>
+      <div class="row"><div class="lb">验收</div><div class="vl">解出的位置关节经 FK 后误差 &lt; 1e-3；能用自己的话解释"为什么 UR5 上不能严格解耦"。</div></div>
+    </div>
+  </div>
+  <div class="mod">
+    <div class="hd"><span class="id">M10</span><span class="nm">姿态逆解：欧拉角与"球形手腕"假设的实测检验</span><span class="hrs">2 课时</span></div>
+    <div class="bd">
+      <div class="row"><div class="lb">目标</div><div class="vl">由目标姿态解出腕部关节角；用数据判定"球形手腕"是否成立。</div></div>
+      <div class="row"><div class="lb">理论锚点</div><div class="vl">已知目标旋转矩阵 → 反解<b>欧拉角</b>；若三轴交于一点，则姿态问题与位置问题完全分离。</div></div>
+      <div class="row"><div class="lb">关键推导</div><div class="vl">展开 <code>Rz·Ry·Rx</code>，用矩阵元素之比构造 <code>atan2</code> 逐个解出腕部三关节——<b>全程仍是 atan2 与 sin/cos</b>，呼应 M7。三块旋转积木在这里第二次派上用场。</div></div>
+      <div class="row"><div class="lb">★ 探究实验</div><div class="vl">① 用 <code>wrist_report()</code> 算两机三轴两两距离：UR5 轴 4 ∥ 轴 6 相距 94.650 mm；R1 三轴偏差仅 5.01 mm。② 只转一个腕关节 90° 测末端位移：UR5 的 <code>wrist_1</code>/<code>wrist_2</code> 分别带动末端 <b>133.9 / 116.4 mm</b>，<code>wrist_3</code> 为 0。③ 查阅文献复核（MDPI <i>Robotics</i> 12(3):71, 2023；arXiv:2510.19081）——学会<b>实测 + 文献双重复核</b>。</div></div>
+      <div class="row"><div class="lb">概念难点</div><div class="vl">万向节死锁（gimbal lock）：腕部中间角为 ±90° 时两个角度同时生效、丢失一个自由度；对应 R1（J6 仅 ±30°）与 UR5（<code>shoulder_lift</code>/<code>wrist_2</code> 对齐时）的奇异位形。</div></div>
+      <div class="row"><div class="lb">代码任务</div><div class="vl">实现 <code>euler_zyx_from_matrix(R)</code> 与 <code>matrix_from_euler_zyx(...)</code>。</div></div>
+      <div class="row"><div class="lb">仿真实操</div><div class="vl">给定一串目标姿态，解出腕角并让仿真末端对齐；同时记录末端位置的"意外"漂移量。</div></div>
+      <div class="row"><div class="lb">验收</div><div class="vl">姿态矩阵往返误差 &lt; 1e-9；能指出死锁发生在哪组角度；能给出"UR5 不是球形手腕"的量化证据。</div></div>
+    </div>
+  </div>
+  <div class="mod">
+    <div class="hd"><span class="id">M11</span><span class="nm">整合、多解、奇异与冗余：UR5 ↔ R1 对照</span><span class="hrs">2 课时</span></div>
+    <div class="bd">
+      <div class="row"><div class="lb">目标</div><div class="vl">拼出完整 IK；系统认识多解、奇异与<b>冗余自由度</b>；通过两台机器的对照理解"构型决定难度"。</div></div>
+      <div class="row"><div class="lb">理论锚点</div><div class="vl">完整 IK = 位置解（M9）+ 姿态解（M10）；6 轴臂最多 <b>8 组解</b>（肩×肘×腕各两种）；7 轴臂则有<b>无穷多组</b>。</div></div>
+      <div class="row"><div class="lb">关键推导</div><div class="vl">① <b>UR5（6 轴）</b>：从有限解里挑——关节限位 / 离奇异最远 / 离当前位形最近；UR5 限位宽（除肘外 ±360°），8 组解基本都能看到。② <b>R1（7 轴）</b>：方程 6 个、未知数 7 个 → 解集是一维流形，必须引入<b>选解准则</b>；R1 限位窄（J6 仅 ±30°），筛选更受约束。</div></div>
+      <div class="row"><div class="lb">代码任务</div><div class="vl">在可解子结构上实现多解返回与筛选，与平台数值 IK 对照；对 R1 额外实现"冗余最优"选解。</div></div>
+      <div class="row"><div class="lb">★ 双机对照</div><div class="vl">同一段目标轨迹分别让 UR5 与 R1 跟随，比较关节曲线上限位/速度的紧张程度。</div></div>
+      <div class="row"><div class="lb">验收</div><div class="vl">对同一目标给出多组合法解并说明取舍；能解释"哪些目标不可达、冗余自由度为什么有用"；能列出两台机器至少 3 条结构性差异。</div></div>
+    </div>
+  </div>
+
+  <h3 class="sub" style="color:var(--p5);">阶段五 · 综合项目</h3>
+  <div class="mod">
+    <div class="hd"><span class="id">M12</span><span class="nm">轨迹规划与平滑</span><span class="hrs">1 课时</span></div>
+    <div class="bd">
+      <div class="row"><div class="lb">目标</div><div class="vl">让机械臂动作"连贯、不抖、不撞限位"。</div></div>
+      <div class="row"><div class="lb">理论锚点</div><div class="vl">笛卡尔路径采样 + 关节空间插值；平滑（五次多项式 / 简单缓动）。</div></div>
+      <div class="row"><div class="lb">关键推导</div><div class="vl">为什么直接对关节角线性插值，末端路径会"拐弯"？——对比"笛卡尔直线 vs 关节直线"。</div></div>
+      <div class="row"><div class="lb">代码任务</div><div class="vl">实现 <code>move_to(pos, R, steps)</code>：目标位姿 → IK → 关节插值 → 逐帧设置。</div></div>
+      <div class="row"><div class="lb">验收</div><div class="vl">机械臂能平滑走出一条指定曲线，无明显抖动。</div></div>
+    </div>
+  </div>
+  <div class="mod">
+    <div class="hd"><span class="id">M13</span><span class="nm">综合任务开发（工作坊）</span><span class="hrs">3 课时</span></div>
+    <div class="bd">
+      <div class="row"><div class="lb">目标</div><div class="vl">综合运用 FK/IK/轨迹完成一个真实小任务。</div></div>
+      <div class="row"><div class="lb">任务菜单</div><div class="vl">
+        <b>A｜轨迹绘图</b>：让末端沿空间中的直线 / 圆 / 正弦曲线运动并绘制轨迹。<br>
+        <b>B｜抓取—搬运—放置</b>：从 A 点抓起物体放到 B 点（需同时处理位置与姿态）。<br>
+        <b>C｜逆解鲁棒性挑战</b>：在关节限位与多解约束下，寻找"最合理"的一组解。
+      </div></div>
+      <div class="row"><div class="lb">验收</div><div class="vl">任务成功完成 + 代码可复现 + 能解释每一步的数学依据。</div></div>
+    </div>
+  </div>
+  <div class="mod">
+    <div class="hd"><span class="id">M14</span><span class="nm">展示、答辩与评价</span><span class="hrs">2 课时</span></div>
+    <div class="bd">
+      <div class="row"><div class="lb">目标</div><div class="vl">表达成果，反思数学与工程的关系。</div></div>
+      <div class="row"><div class="lb">形式</div><div class="vl">团队演示（含"预测—验证"日志回顾）+ 答辩（回答"为什么这样解""遇到什么坑"）。</div></div>
+      <div class="row"><div class="lb">验收</div><div class="vl">见"八、评估方案"。</div></div>
+    </div>
+  </div>
+
+  <!-- 七 -->
+  <h2 class="sec" id="s7">七、仿真平台接口契约（供平台准备时对齐）</h2>
+  <div class="callout">以下为<b>建议的 Python API 契约</b>。准备仿真平台 / 代码 / 模型文件时，按此封装即可与课程无缝对接。推荐引擎：<b>PyBullet</b>（纯 Python、易上手）或 <b>MuJoCo</b>（更精细）；也可用 THREE.js / CoppeliaSim 等。</div>
+<pre><code>class ArmBot:
+    """机械臂仿真接口（建议在平台上优先实现，两台机型共用）"""
+
+    # —— 状态读写 ——
+    def set_joints(self, q):            # q: 关节角列表（弧度）；UR5 长度 6，R1 长度 7
+    def get_joints(self) -&gt; list:       # 返回当前关节角
+    def get_ee_pose(self) -&gt; (pos, R):  # 末端位置(3,)与姿态矩阵(3,3) —— 真值
+    def reset(self):                    # 复位到初始姿态
+
+    # —— 运动 ——
+    def move_joints(self, q, steps=50): # 关节空间平滑运动
+    def move_to(self, pos, R=None, steps=50):   # 平台IK移动到目标位姿（对照用）
+    def draw_path(self, points, R=None):        # 让末端依次经过一串点位
+
+    # —— 结构与辅助 ——
+    def joint_limits(self) -&gt; list:     # 各关节限位 [(lo,hi), ...]
+    def reachable(self, pos) -&gt; bool:   # 目标是否可达（可选）
+    def show(self):                     # 渲染/刷新画面
+
+# —— 两种模式（关键教学设计）——
+# 真值模式：平台自带 fk/ik，用于对照与验收
+# 学生模式：禁用平台内置 fk/ik，学生必须用自己的实现（防抄近路）</code></pre>
+  <p><strong>配套脚手架建议</strong>：为每个模块提供"填空式"代码骨架（TODO 标记 + 单元测试），学生只填写核心公式，其余由平台兜底。</p>
+
+  <!-- 八 -->
+  <h2 class="sec" id="s8">八、评估方案</h2>
+  <h3 class="sub">8.1 成绩构成</h3>
+  <table>
+    <thead><tr><th>类别</th><th>权重</th><th>内容</th></tr></thead>
+    <tbody>
+      <tr><td><strong>形成性评价</strong></td><td>60%</td><td>每模块的"推导记录 + 代码 + 仿真验收 + 预测-验证日志"（学习档案 / Jupyter Notebook）</td></tr>
+      <tr><td><strong>终结性评价</strong></td><td>40%</td><td>结课项目（M13–M14）：任务完成度 + 代码质量 + 数学解释力 + 团队协作 + 展示表达</td></tr>
+    </tbody>
+  </table>
+  <h3 class="sub">8.2 结课项目评分量规（Rubric，满分 100）</h3>
+  <table>
+    <thead><tr><th>维度</th><th>优秀</th><th>合格</th><th>待改进</th></tr></thead>
+    <tbody>
+      <tr><td><strong>数学正确性</strong></td><td>推导严谨、公式准确（30）</td><td>公式基本正确（20）</td><td>存在明显错误（&lt;10）</td></tr>
+      <tr><td><strong>代码实现</strong></td><td>结构清晰、可复现、有测试（25）</td><td>能运行出结果（15）</td><td>无法稳定运行（&lt;8）</td></tr>
+      <tr><td><strong>仿真效果</strong></td><td>轨迹/任务精准流畅（25）</td><td>大体完成（15）</td><td>未达成目标（&lt;8）</td></tr>
+      <tr><td><strong>解释与反思</strong></td><td>能讲清每步依据，反思透彻（10）</td><td>能基本说明（6）</td><td>说不清楚（&lt;3）</td></tr>
+      <tr><td><strong>团队协作</strong></td><td>分工明确、共同贡献（10）</td><td>有协作（6）</td><td>依赖个人（&lt;3）</td></tr>
+    </tbody>
+  </table>
+  <h3 class="sub">8.3 分层挑战（差异化）</h3>
+  <ul>
+    <li><strong>基础层</strong>：完成模块验收标准即可（如实现并验证 2R IK）；</li>
+    <li><strong>进阶层</strong>：完成结课项目 A / B；</li>
+    <li><strong>挑战层</strong>：完成 C（多解鲁棒性）+ 拓展（加入避障，或用自实现的 FK 驱动仿真动画）。</li>
+  </ul>
+
+  <!-- 九 -->
+  <h2 class="sec" id="s9">九、风险预案与教学建议</h2>
+  <table>
+    <thead><tr><th>风险</th><th>表现</th><th>预案</th></tr></thead>
+    <tbody>
+      <tr><td><strong>3D 抽象过载</strong></td><td>学生卡在旋转矩阵</td><td>提前 2D 类比 + 大量可视化；矩阵"逐列讲"；允许"先会用后深究"</td></tr>
+      <tr><td><strong>数学与代码脱节</strong></td><td>会推不会写</td><td>填空式骨架 + 公式逐行对照注释 + 结对编程</td></tr>
+      <tr><td><strong>调试挫败</strong></td><td>出错后放弃</td><td>调试清单（查单位/查象限/查限位）+ 预测—验证表锁定错误</td></tr>
+      <tr><td><strong>多解与奇异难懂</strong></td><td>概念空转</td><td>手势模拟"肘上/肘下"；可视化可达空间与死锁</td></tr>
+      <tr><td><strong>进度分化</strong></td><td>快慢差距拉大</td><td>分层任务 + 进阶挑战 + 小组互助</td></tr>
+      <tr><td><strong>平台/模型不稳定</strong></td><td>仿真报错打断教学</td><td>提前准备"离线真值数据 + 备用静态图"兜底</td></tr>
+    </tbody>
+  </table>
+  <div class="callout"><b>教学建议：</b>尽量让每节课都"看得见机械臂动起来"——把 45 分钟切分为"推导（20）+ 编码（15）+ 仿真演示（10）"，让抽象的三角函数 15 分钟内就变成屏幕上真实的运动。</div>
+
+  <!-- 十 -->
+  <h2 class="sec" id="s10">十、资源清单与分工</h2>
+  <table>
+    <thead><tr><th>资源</th><th>用途</th><th>负责方</th></tr></thead>
+    <tbody>
+      <tr><td>课程架构设计（本文档）</td><td>课程蓝图</td><td><strong>已完成</strong></td></tr>
+      <tr><td>仿真平台（Python + PyBullet / MuJoCo + 自研积木框架）</td><td>教学载体</td><td><strong>框架已提供</strong>（<code>armblocks/</code>）</td></tr>
+      <tr><td><b>UR5 模型</b>（URDF + .dae/.stl 网格，主力）</td><td>可视对象</td><td><strong>已获取</strong>（<code>models/ur5/</code>）</td></tr>
+      <tr><td><b>宇树 R1 模型</b>（URDF + STL 网格，对照）</td><td>可视对象</td><td><strong>已获取</strong>（<code>models/r1_7a/</code>）</td></tr>
+      <tr><td>机型对比文档 <code>docs/04</code></td><td>两机异同</td><td><strong>已完成</strong></td></tr>
+      <tr><td>积木式仿真框架 <code>armblocks/</code>（含真值 FK/IK、腕部几何分析）</td><td>教学载体</td><td><strong>已提供</strong></td></tr>
+      <tr><td>可运行演示（8 个）</td><td>课堂演示</td><td><strong>已提供</strong>（<code>demos/</code>）</td></tr>
+      <tr><td>各模块"填空式"代码骨架</td><td>学生编码</td><td><strong>已提供</strong>（<code>armblocks/blocks/</code>）</td></tr>
+      <tr><td>讲义 / PPT / 板书要点</td><td>课堂呈现</td><td>后续可按本架构展开</td></tr>
+      <tr><td>关键公式速查卡（见附录 A）</td><td>学生工具</td><td>本文档已提供</td></tr>
+    </tbody>
+  </table>
+
+  <!-- 附录 -->
+  <h2 class="sec" id="sA">附录 A · 关键公式速查</h2>
+  <div class="card">
+    <h4 class="mini">① 平面连杆末端（极坐标 → 直角坐标）</h4>
+    <pre><code>x = L·cos θ
+y = L·sin θ</code></pre>
+    <h4 class="mini">② 2R 平面正运动学（FK）</h4>
+    <pre><code>x = L1·cos θ1 + L2·cos(θ1 + θ2)
+y = L1·sin θ1 + L2·sin(θ1 + θ2)</code></pre>
+    <h4 class="mini">③ 2R 平面逆运动学（IK）—— 余弦定理</h4>
+    <pre><code>cos θ2 = (x² + y² − L1² − L2²) / (2·L1·L2)
+θ1 = atan2(y, x) − atan2(L2·sin θ2,  L1 + L2·cos θ2)
+
+可达条件：|L1 − L2| ≤ √(x² + y²) ≤ L1 + L2</code></pre>
+    <h4 class="mini">④ 球坐标（空间位置）</h4>
+    <pre><code>x = r·sin φ·cos θ
+y = r·sin φ·sin θ
+z = r·cos φ</code></pre>
+    <h4 class="mini">⑤ 基本旋转矩阵（绕 z 轴 α）</h4>
+    <pre><code>Rz(α) = [ cos α  −sin α  0 ]
+        [ sin α   cos α  0 ]
+        [   0       0     1 ]   （Ry、Rx 结构同理）</code></pre>
+    <h4 class="mini">⑥ 变换链（三维正运动学）</h4>
+    <pre><code>T_end = T1 · T2 · T3 · T4 · T5 · T6</code></pre>
+    <h4 class="mini">⑦ 核心函数提示</h4>
+    <pre><code>atan2(y, x)  →  返回 (−π, π]，自动处理四个象限</code></pre>
+  </div>
+
+  <div class="foot">
+    本文档为课程整体架构设计 · 仿真平台、代码与机械臂模型文件准备完成后，即可进入逐模块讲义与课堂材料的细化
+  </div>
+
+</div>
+</body>
+</html>
