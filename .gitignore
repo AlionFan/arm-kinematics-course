@@ -16,6 +16,8 @@ outputs/*.mp4
 
 # ---- 讲义/PPT 流水线中间产物（本地构建用，不入库） ----
 output/
+ppt/*/preview/
+ppt/*/figures.pptx
 
 # ---- 编辑器 / 系统 ----
 .vscode/
